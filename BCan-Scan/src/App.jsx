@@ -7,6 +7,8 @@ import ResultsDashboardPage from './pages/ResultsDashboardPage';
 import AIAssistantPage from './pages/AIAssistantPage';
 import HistoryPage from './pages/HistoryPage';
 import AboutPage from './pages/AboutPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/assistant" element={<AIAssistantPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Layout>

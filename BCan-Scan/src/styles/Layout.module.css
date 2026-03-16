@@ -186,14 +186,15 @@
 
 .signupBtn {
   background: var(--primary);
-  color: white;
+  color: whitesmoke;
   border-color: var(--primary);
   box-shadow: none;
 }
 
 .signupBtn:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: whitesmoke;
 }
 
 .mobileMenuButton {
@@ -225,30 +226,99 @@
 }
 
 .footer {
-  background: white;
-  color: var(--gray-700);
-  text-align: center;
-  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg, #0a4440 0%, #0d1f2d 100%);
+  color: rgba(255, 255, 255, 0.8);
   margin-top: auto;
-  border-top: 1px solid var(--gray-200);
+  border-top: 3px solid var(--secondary);
 }
 
-.footerContent {
-  max-width: 1200px;
+.footerInner {
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 3rem 2rem 2rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 3rem;
 }
 
-.footerContent p:first-child {
-  color: var(--primary);
-  font-weight: 600;
-  margin-bottom: 0.4rem;
+.footerBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.footerCopy {
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.footerLogoIcon {
+  color: var(--secondary);
+  font-size: 1.35rem;
+  display: flex;
+  align-items: center;
+}
+
+.footerTagline {
+  color: rgba(255, 255, 255, 0.58);
   font-size: 0.875rem;
-  font-weight: 400;
-  color: var(--gray-600);
-  margin-top: 0.25rem;
+  line-height: 1.75;
+  max-width: 300px;
+  margin: 0;
+}
+
+.footerSectionTitle {
+  color: var(--secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+}
+
+.footerLinksList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.footerLink {
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+  display: inline-block;
+}
+
+.footerLink:hover {
+  color: var(--secondary);
+  padding-left: 4px;
+}
+
+.footerNoticeText {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.825rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.footerBottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 2rem;
+  text-align: center;
+}
+
+.footerBottom p {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.78rem;
+  margin: 0;
 }
 
 @media (max-width: 768px) {
@@ -256,25 +326,35 @@
     padding: 0.875rem;
   }
 
-  .authButtons span {
-    display: none;
-  }
-
   .loginBtn,
   .signupBtn {
     padding: 0.4rem 0.55rem;
+  }
+
+  .signupBtn {
+    display: none;
+  }
+
+  .loginBtn span {
+    display: inline;
   }
 
   .main {
     padding: 1.5rem 0.75rem;
   }
 
-  .footer {
-    padding: 1.25rem 0.875rem;
+  .footerInner {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2rem 1.25rem 1.5rem;
   }
 
-  .footerCopy {
-    font-size: 0.75rem;
+  .footerBrand {
+    grid-column: 1 / -1;
+  }
+
+  .footerBottom {
+    padding: 0.875rem 1.25rem;
   }
 }
 
@@ -291,7 +371,13 @@
     padding: 1rem 0.5rem;
   }
 
-  .footer {
-    padding: 1rem 0.75rem;
+  .footerInner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.75rem 1rem 1.25rem;
+  }
+
+  .footerBottom {
+    padding: 0.75rem 1rem;
   }
 }

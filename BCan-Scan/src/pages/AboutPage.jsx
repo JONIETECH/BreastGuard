@@ -1,5 +1,5 @@
-import Card from '../components/Card';
 import { FiUsers, FiUser } from 'react-icons/fi';
+import styles from '../styles/AboutPage.module.css';
 
 export default function AboutPage() {
   const team = [
@@ -22,169 +22,62 @@ export default function AboutPage() {
   ];
 
   return (
-    <div style={styles.container}>
-      <h1>About BreastGuard AI</h1>
-
-      {/* Main Description */}
-      <Card highlight={true} style={{ marginBottom: '2rem' }}>
-        <h2>AI-Powered Breast Cancer Screening Support</h2>
-        <p>
+    <div className={styles.aboutPage}>
+      <header className={styles.aboutHeader}>
+        <h1 className={styles.aboutTitle}>About BreastGuard AI</h1>
+        <p className={styles.aboutIntro}>
           BreastGuard AI is a final year Computer Science project developed at Makerere University,
-          College of Computing and Information Sciences. It demonstrates the application of AI and
-          machine learning in healthcare, specifically for breast cancer screening and early detection.
+          College of Computing and Information Sciences. It demonstrates the practical use of AI in
+          breast cancer screening and early detection support.
         </p>
-      </Card>
+      </header>
 
-      {/* Mission */}
-      <p style={styles.missionParagraph}>
-        <strong>Our Mission:</strong> BreastGuard AI aims to provide accessible screening tools for diverse populations, support clinicians with evidence-based AI predictions, enable early detection through sophisticated image analysis, and deliver personalized guidance through conversational AI. This project combines cutting-edge technology with healthcare applications to demonstrate the practical impact of AI in medical diagnosis and screening.
-      </p>
+      <section className={styles.missionBand}>
+        <p>
+          <strong>Our Mission:</strong> Provide accessible and intelligent screening support tools,
+          assist clinicians with evidence-based AI insights, and improve awareness through clear,
+          conversational guidance.
+        </p>
+      </section>
 
-      {/* Features */}
-      <Card style={{ marginTop: '2rem' }} title="Key Features">
-        <div style={styles.featuresGrid}>
-          <div style={styles.featureItem}>
-            <h4>1. Risk Assessment</h4>
-            <p>
-              Collect clinical risk factors including age, family history, reproductive history,
-              and lifestyle factors to predict breast cancer risk.
-            </p>
-          </div>
-
-          <div style={styles.featureItem}>
-            <h4>2. Image Analysis</h4>
-            <p>
-              Upload histopathology images for AI-powered classification (benign/malignant) with
-              confidence scores.
-            </p>
-          </div>
-
-          <div style={styles.featureItem}>
-            <h4>3. AI Assistant</h4>
-            <p>
-              Interactive chatbot providing medical information, screening guidance, and
-              educational content about breast cancer.
-            </p>
-          </div>
-
-          <div style={styles.featureItem}>
-            <h4>4. Results Dashboard</h4>
-            <p>
-              Comprehensive view of all predictions and results with visual representations and
-              detailed analysis.
-            </p>
-          </div>
-
-          <div style={styles.featureItem}>
-            <h4>5. History Tracking</h4>
-            <p>
-              Maintains a complete history of all screening sessions with timestamps and
-              historical comparison capabilities.
-            </p>
-          </div>
-
-          <div style={styles.featureItem}>
-            <h4>6. PWA Support</h4>
-            <p>
-              Progressive Web App features enabling offline access and installation as a native
-              application.
-            </p>
-          </div>
+      <section className={styles.sectionCard}>
+        <h2 className={styles.sectionTitle}>Key Features</h2>
+        <div className={styles.featuresGrid}>
+          <article className={styles.featureTile}>
+            <h4>Risk Assessment</h4>
+            <p>Predicts breast cancer risk using clinical and lifestyle factors.</p>
+          </article>
+          <article className={styles.featureTile}>
+            <h4>Image Analysis</h4>
+            <p>Classifies uploaded histopathology images with confidence scores.</p>
+          </article>
+          <article className={styles.featureTile}>
+            <h4>AI Assistant</h4>
+            <p>Provides educational guidance and answers screening-related questions.</p>
+          </article>
+          <article className={styles.featureTile}>
+            <h4>History Tracking</h4>
+            <p>Stores previous sessions for progress review and comparison over time.</p>
+          </article>
         </div>
-      </Card>
+      </section>
 
-      {/* Team Members */}
-      <Card title="Project Team" style={{ marginTop: '2rem' }} icon={FiUsers}>
-        <p style={{ marginBottom: '2rem' }}>
-          Developed as a final year Computer Science project at Makerere University, College of Computing and Information Sciences by the following dedicated team members:
-        </p>
-        <div style={styles.teamGrid}>
+      <section className={styles.sectionCard}>
+        <h2 className={styles.sectionTitle}><FiUsers /> Project Team</h2>
+        <div className={styles.teamGrid}>
           {team.map((member, idx) => (
-            <div key={idx} style={styles.teamCard}>
-              <div style={styles.teamAvatar}>
-                <FiUser size={48} />
+            <article key={idx} className={styles.teamCard}>
+              <div className={styles.teamAvatar}>
+                <FiUser size={24} />
               </div>
-              <p style={styles.teamName}>{member.name}</p>
-              <a href={`mailto:${member.email}`} style={styles.teamEmail}>
+              <p className={styles.teamName}>{member.name}</p>
+              <a href={`mailto:${member.email}`} className={styles.teamEmail}>
                 {member.email}
               </a>
-            </div>
+            </article>
           ))}
         </div>
-      </Card>
+      </section>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: '1000px',
-    margin: '0 auto',
-    padding: '2rem 1rem',
-  },
-  missionParagraph: {
-    fontSize: '1rem',
-    lineHeight: '1.8',
-    color: 'var(--gray-700)',
-    backgroundColor: 'rgba(15, 118, 110, 0.05)',
-    padding: '1.5rem',
-    borderRadius: '0.5rem',
-    borderLeft: '4px solid var(--primary)',
-    marginBottom: '2rem',
-  },
-  list: {
-    paddingLeft: '1.5rem',
-    lineHeight: '2',
-  },
-  featuresGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '1.5rem',
-  },
-  featureItem: {
-    padding: '1.25rem',
-    backgroundColor: 'rgba(15, 118, 110, 0.05)',
-    borderRadius: '0.5rem',
-    borderLeft: '4px solid var(--primary)',
-  },
-  teamGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '1.5rem',
-  },
-  teamCard: {
-    padding: '1.75rem 1.25rem',
-    backgroundColor: 'var(--gray-50)',
-    borderRadius: '0.75rem',
-    border: '1px solid var(--gray-200)',
-    textAlign: 'center',
-    transition: 'all 0.3s ease',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  teamAvatar: {
-    width: '64px',
-    height: '64px',
-    borderRadius: '50%',
-    backgroundColor: 'var(--primary)',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '1rem',
-    fontSize: '32px',
-  },
-  teamName: {
-    fontSize: '1rem',
-    fontWeight: '600',
-    color: 'var(--gray-900)',
-    marginBottom: '0.5rem',
-  },
-  teamEmail: {
-    fontSize: '0.875rem',
-    color: 'var(--primary)',
-    textDecoration: 'none',
-    transition: 'opacity 0.3s ease',
-  },
-};

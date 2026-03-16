@@ -1,0 +1,151 @@
+.aboutPage {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.aboutHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.aboutTitle {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+  color: var(--gray-900);
+}
+
+.aboutIntro {
+  margin: 0 auto;
+  max-width: 780px;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+.missionBand {
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(236, 72, 153, 0.08));
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.25rem;
+}
+
+.missionBand p {
+  margin: 0;
+  color: var(--gray-700);
+  line-height: 1.8;
+}
+
+.sectionCard {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 0.875rem;
+  background: white;
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
+}
+
+.sectionTitle {
+  margin: 0 0 1rem;
+  color: var(--primary);
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.featureTile {
+  border: 1px solid var(--gray-200);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(15, 118, 110, 0.04), white);
+}
+
+.featureTile h4 {
+  margin: 0 0 0.35rem;
+  color: var(--gray-900);
+  font-size: 1rem;
+}
+
+.featureTile p {
+  margin: 0;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.teamCard {
+  background: linear-gradient(145deg, white, rgba(236, 72, 153, 0.05));
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  border-radius: 0.875rem;
+  padding: 1.2rem 1rem;
+  text-align: center;
+}
+
+.teamAvatar {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teamName {
+  margin: 0;
+  color: var(--gray-900);
+  font-weight: 600;
+  font-size: 0.97rem;
+}
+
+.teamEmail {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: var(--secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.teamEmail:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .aboutPage {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .missionBand,
+  .sectionCard {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .aboutPage {
+    padding: 1rem 0.5rem;
+  }
+
+  .aboutHeader {
+    text-align: left;
+  }
+
+  .aboutIntro {
+    margin: 0;
+  }
+}

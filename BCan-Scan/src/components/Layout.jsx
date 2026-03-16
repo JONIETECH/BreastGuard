@@ -95,17 +95,42 @@ export default function Layout({ children }) {
 
       {/* Footer */}
       <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <p>
-            BCan Scan - Conversational Retrieval-Augmented AI Assistant for
-            Breast Cancer Screening
-          </p>
-          <p className={styles.footerCopy}>
-            © 2024 Final Year Project. All rights reserved.
-          </p>
-          <p className={styles.footerCopy}>
-            For educational and demonstration purposes only.
-          </p>
+        <div className={styles.footerInner}>
+          {/* Brand */}
+          <div className={styles.footerBrand}>
+            <div className={styles.footerLogo}>
+              <span className={styles.footerLogoIcon}><FiActivity /></span>
+              <span>BreastGuard AI</span>
+            </div>
+            <p className={styles.footerTagline}>
+              AI-powered breast cancer screening support for early detection
+              and better patient outcomes.
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className={styles.footerSectionTitle}>Quick Links</h4>
+            <ul className={styles.footerLinksList}>
+              <li><Link to="/risk-assessment" className={styles.footerLink}>Risk Assessment</Link></li>
+              <li><Link to="/image-upload" className={styles.footerLink}>Image Upload</Link></li>
+              <li><Link to="/assistant" className={styles.footerLink}>AI Assistant</Link></li>
+            </ul>
+          </div>
+
+          {/* Disclaimer */}
+          <div>
+            <h4 className={styles.footerSectionTitle}>Disclaimer</h4>
+            <p className={styles.footerNoticeText}>
+              This tool is for educational and demonstration purposes only.
+              Always consult a qualified medical professional for medical advice
+              and diagnosis.
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.footerBottom}>
+          <p>© 2026 BreastGuard &middot; Final Year Project. All rights reserved.</p>
         </div>
       </footer>
     </div>

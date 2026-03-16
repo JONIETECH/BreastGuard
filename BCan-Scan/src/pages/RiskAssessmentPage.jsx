@@ -7,6 +7,7 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { Input, Select, RadioGroup, ProgressBar } from '../components/FormInputs';
 import { FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import bg2 from '../assets/bg2.jpg';
 
 export default function RiskAssessmentPage() {
   const { riskFactors, setRiskFactors, addPrediction, addToHistory } = useAppStore();
@@ -78,8 +79,9 @@ export default function RiskAssessmentPage() {
       result.level === 'High' ? colors.danger : result.level === 'Medium' ? colors.warning : colors.success;
 
     return (
-      <div style={styles.container}>
-        <h1>Risk Assessment Result</h1>
+      <div style={styles.pageBackground}>
+        <div style={styles.container}>
+          <h1>Risk Assessment Result</h1>
 
         <Card highlight={true} style={styles.resultCard}>
           <div style={{ textAlign: 'center' }}>
@@ -132,7 +134,7 @@ export default function RiskAssessmentPage() {
           </div>
         </Card>
 
-        <Card title="Your Factors" style={{ marginTop: '2rem' }}>
+          <Card title="Your Factors" style={{ marginTop: '2rem' }}>
           <div style={styles.factorsList}>
             <div style={styles.factorItem}>
               <span style={styles.factorLabel}>Age:</span>
@@ -161,19 +163,21 @@ export default function RiskAssessmentPage() {
               <span>{riskFactors.lifestyleFactors}</span>
             </div>
           </div>
-        </Card>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <h1>Clinical Risk Assessment</h1>
-      <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
-        Enter your clinical factors to receive a personalized risk prediction
-      </p>
+    <div style={styles.pageBackground}>
+      <div style={styles.container}>
+        <h1>Clinical Risk Assessment</h1>
+        <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
+          Enter your clinical factors to receive a personalized risk prediction
+        </p>
 
-      <Card>
+        <Card>
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.progressSection}>
             <ProgressBar progress={progress} />
@@ -290,12 +294,25 @@ export default function RiskAssessmentPage() {
             </>
           )}
         </form>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }
 
 const styles = {
+  pageBackground: {
+    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${bg2})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    marginLeft: 'calc(50% - 50vw)',
+    marginRight: 'calc(50% - 50vw)',
+    minHeight: 'calc(100dvh - 72px)',
+    borderRadius: '0',
+    padding: '1.25rem',
+  },
   container: {
     maxWidth: '800px',
     margin: '0 auto',

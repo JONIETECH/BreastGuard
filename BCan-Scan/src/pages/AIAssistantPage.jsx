@@ -4,6 +4,7 @@ import { getChatResponse, classifyImage } from '../services/mockServices';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { FiSend, FiMessageCircle, FiImage, FiX } from 'react-icons/fi';
+import bg2 from '../assets/bg2.jpg';
 
 export default function AIAssistantPage() {
   const { chatMessages, addMessage, clearChat } = useAppStore();
@@ -153,13 +154,14 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1>Medical AI Assistant</h1>
-      <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
-        Ask questions about breast cancer screening, or upload an image for analysis
-      </p>
+    <div style={styles.pageBackground}>
+      <div style={styles.container}>
+        <h1>Medical AI Assistant</h1>
+        <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
+          Ask questions about breast cancer screening, or upload an image for analysis
+        </p>
 
-      <div style={styles.chatWrapper}>
+        <div style={styles.chatWrapper}>
         {/* Chat Area */}
         <div style={styles.chatArea}>
           {chatMessages.length === 0 ? (
@@ -299,12 +301,25 @@ export default function AIAssistantPage() {
             </div>
           )}
         </Card>
+        </div>
       </div>
     </div>
   );
 }
 
 const styles = {
+  pageBackground: {
+    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${bg2})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    marginLeft: 'calc(50% - 50vw)',
+    marginRight: 'calc(50% - 50vw)',
+    minHeight: 'calc(100dvh - 72px)',
+    borderRadius: '0',
+    padding: '1.25rem',
+  },
   container: {
     maxWidth: '900px',
     margin: '0 auto',
