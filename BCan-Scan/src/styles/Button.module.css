@@ -1,0 +1,80 @@
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.buttonPrimary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(15, 118, 110, 0.3);
+}
+
+.buttonSecondary {
+  background-color: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background-color: var(--primary);
+  color: white;
+}
+
+.buttonOutline {
+  background-color: transparent;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.buttonOutline:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--gray-50);
+}
+
+.buttonSmall {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.buttonLarge {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+.buttonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .buttonLarge {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}

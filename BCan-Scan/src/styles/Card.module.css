@@ -1,0 +1,193 @@
+.card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid var(--gray-200);
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--gray-300);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.cardFeature {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(135deg, white 0%, var(--gray-50) 100%);
+  border: none;
+  overflow: hidden;
+}
+
+.cardFeature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+.cardFeature.highlight {
+  border: 2px solid var(--primary);
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.06), white);
+  box-shadow: 0 4px 20px rgba(15, 118, 110, 0.12);
+}
+
+.cardIconWrapper {
+  font-size: 3rem;
+  color: var(--primary);
+  padding: 1.5rem 0 0 0;
+  display: flex;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.cardFeature:hover .cardIconWrapper {
+  transform: scale(1.1) translateY(-4px);
+}
+
+.cardHighlight {
+  border-color: var(--primary-light);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.05) 0%,
+    rgba(30, 64, 175, 0.05) 100%
+  );
+}
+
+.cardButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  transition: none;
+}
+
+.cardButton:hover {
+  transform: none;
+}
+
+.cardButton:hover .card {
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.cardBadge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--primary-light);
+  color: white;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cardBadgeDanger {
+  background-color: var(--danger);
+}
+
+.cardBadgeWarning {
+  background-color: var(--warning);
+}
+
+.cardBadgeSuccess {
+  background-color: var(--success);
+}
+
+.cardContent {
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+
+.cardActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.cardMeta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+  }
+
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .cardActions button {
+    width: 100%;
+  }
+
+  .cardFeature {
+    padding: 1rem;
+  }
+
+  .cardTitle {
+    font-size: 1.125rem;
+  }
+
+  .cardIconWrapper {
+    font-size: 2.5rem;
+    padding: 1rem 0 0 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .cardContent {
+    font-size: 0.875rem;
+  }
+
+  .cardIconWrapper {
+    font-size: 2rem;
+  }
+
+  .cardFeature::before {
+    height: 4px;
+  }
+}
