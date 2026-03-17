@@ -6,7 +6,7 @@ import { colors } from '../utils/colors.js';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { FiUpload, FiX, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
-import bg2 from '../assets/bg2.jpg';
+import bg2 from '../assets/bg2.webp';
 
 export default function ImageUploadPage() {
   const { uploadedImages, addImage, removeImage, addPrediction, addToHistory } = useAppStore();

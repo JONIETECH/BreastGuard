@@ -4,7 +4,7 @@ import { getChatResponse, classifyImage } from '../services/mockServices';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { FiSend, FiMessageCircle, FiImage, FiX } from 'react-icons/fi';
-import bg2 from '../assets/bg2.jpg';
+import bg2 from '../assets/bg2.webp';
 
 export default function AIAssistantPage() {
   const { chatMessages, addMessage, clearChat } = useAppStore();

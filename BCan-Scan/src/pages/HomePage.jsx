@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FiActivity, FiImage, FiMessageCircle } from 'react-icons/fi';
 import Button from '../components/Button';
-import heroBg from '../assets/bg1.jpg';
+import heroBg from '../assets/bg1.webp';
 import styles from '../styles/HomePage.module.css';
 
 export default function HomePage() {

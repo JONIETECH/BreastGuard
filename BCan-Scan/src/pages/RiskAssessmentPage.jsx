@@ -7,7 +7,7 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { Input, Select, RadioGroup, ProgressBar } from '../components/FormInputs';
 import { FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
-import bg2 from '../assets/bg2.jpg';
+import bg2 from '../assets/bg2.webp';
 
 export default function RiskAssessmentPage() {
   const { riskFactors, setRiskFactors, addPrediction, addToHistory } = useAppStore();
