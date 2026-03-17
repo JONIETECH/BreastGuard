@@ -6,7 +6,7 @@
   display: grid;
   place-items: center;
   padding: 1rem;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url('../assets/bg2.jpg');
+  background-image: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url('../assets/bg2.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -102,6 +102,7 @@
 
 @media (max-width: 480px) {
   .authPage {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url('../assets/bg2.jpg');
     padding: 0.5rem;
   }
 

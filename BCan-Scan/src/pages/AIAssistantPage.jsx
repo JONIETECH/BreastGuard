@@ -4,7 +4,8 @@ import { getChatResponse, classifyImage } from '../services/mockServices';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { FiSend, FiMessageCircle, FiImage, FiX } from 'react-icons/fi';
-import bg2 from '../assets/bg2.webp';
+import bg2Desktop from '../assets/bg2.webp';
+import bg2Mobile from '../assets/bg2.jpg';
 
 export default function AIAssistantPage() {
   const { chatMessages, addMessage, clearChat } = useAppStore();
@@ -12,6 +13,7 @@ export default function AIAssistantPage() {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -22,6 +24,12 @@ export default function AIAssistantPage() {
   useEffect(() => {
     scrollToBottom();
   }, [chatMessages]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const suggestedQuestions = [
     'What does malignant mean?',
@@ -154,7 +162,12 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <div style={styles.pageBackground}>
+    <div
+      style={{
+        ...styles.pageBackground,
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${isMobile ? bg2Mobile : bg2Desktop})`,
+      }}
+    >
       <div style={styles.container}>
         <h1>Medical AI Assistant</h1>
         <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
@@ -309,7 +322,6 @@ export default function AIAssistantPage() {
 
 const styles = {
   pageBackground: {
-    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${bg2})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

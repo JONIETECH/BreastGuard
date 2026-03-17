@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { predictRisk } from '../services/mockServices';
 import { validateAge } from '../utils/helpers';
@@ -7,7 +7,8 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { Input, Select, RadioGroup, ProgressBar } from '../components/FormInputs';
 import { FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
-import bg2 from '../assets/bg2.webp';
+import bg2Desktop from '../assets/bg2.webp';
+import bg2Mobile from '../assets/bg2.jpg';
 
 export default function RiskAssessmentPage() {
   const { riskFactors, setRiskFactors, addPrediction, addToHistory } = useAppStore();
@@ -15,6 +16,13 @@ export default function RiskAssessmentPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [step, setStep] = useState(1);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,7 +87,12 @@ export default function RiskAssessmentPage() {
       result.level === 'High' ? colors.danger : result.level === 'Medium' ? colors.warning : colors.success;
 
     return (
-      <div style={styles.pageBackground}>
+      <div
+        style={{
+          ...styles.pageBackground,
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${isMobile ? bg2Mobile : bg2Desktop})`,
+        }}
+      >
         <div style={styles.container}>
           <h1>Risk Assessment Result</h1>
 
@@ -170,7 +183,12 @@ export default function RiskAssessmentPage() {
   }
 
   return (
-    <div style={styles.pageBackground}>
+    <div
+      style={{
+        ...styles.pageBackground,
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${isMobile ? bg2Mobile : bg2Desktop})`,
+      }}
+    >
       <div style={styles.container}>
         <h1>Clinical Risk Assessment</h1>
         <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
@@ -302,7 +320,6 @@ export default function RiskAssessmentPage() {
 
 const styles = {
   pageBackground: {
-    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${bg2})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

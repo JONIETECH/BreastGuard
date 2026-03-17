@@ -5,6 +5,7 @@
 }
 
 .hero {
+  background-image: var(--hero-bg-desktop);
   position: relative;
   text-align: center;
   margin-bottom: 2rem;
@@ -291,6 +292,10 @@
 }
 
 @media (max-width: 768px) {
+  .hero {
+    background-image: var(--hero-bg-mobile);
+  }
+
   .container {
     padding: 1rem 0.75rem;
   }

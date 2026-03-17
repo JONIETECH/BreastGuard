@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { classifyImage } from '../services/mockServices';
 import { validateImageFile, readFileAsDataURL } from '../utils/helpers';
@@ -6,7 +6,8 @@ import { colors } from '../utils/colors.js';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { FiUpload, FiX, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
-import bg2 from '../assets/bg2.webp';
+import bg2Desktop from '../assets/bg2.webp';
+import bg2Mobile from '../assets/bg2.jpg';
 
 export default function ImageUploadPage() {
   const { uploadedImages, addImage, removeImage, addPrediction, addToHistory } = useAppStore();
@@ -14,6 +15,13 @@ export default function ImageUploadPage() {
   const [loading, setLoading] = useState(false);
   const [classifications, setClassifications] = useState({});
   const [errors, setErrors] = useState({});
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -94,7 +102,12 @@ export default function ImageUploadPage() {
   };
 
   return (
-    <div style={styles.pageBackground}>
+    <div
+      style={{
+        ...styles.pageBackground,
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${isMobile ? bg2Mobile : bg2Desktop})`,
+      }}
+    >
       <div style={styles.container}>
         <h1>Histopathology Image Upload</h1>
         <p style={{ color: 'var(--gray-600)', marginBottom: '2rem' }}>
@@ -219,7 +232,6 @@ export default function ImageUploadPage() {
 
 const styles = {
   pageBackground: {
-    backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(${bg2})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
