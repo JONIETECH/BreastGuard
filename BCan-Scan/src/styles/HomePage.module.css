@@ -28,7 +28,7 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(2, 6, 23, 0.42);
+  background: rgba(2, 6, 23, 0.082);
 }
 
 .heroContent {
@@ -48,9 +48,9 @@
   margin-bottom: 1rem;
   padding: 0.4rem 0.75rem;
   border-radius: 999px;
-  background: rgba(236, 72, 153, 0.2);
-  border: 1px solid rgba(236, 72, 153, 0.45);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(236, 72, 153, 0.5);
+  color: var(--secondary);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -60,13 +60,13 @@
   font-size: clamp(2rem, 4.2vw, 3.2rem);
   font-weight: 700;
   margin-bottom: 0.75rem;
-  color: #fff;
+  color: var(--primary);
   letter-spacing: -0.8px;
 }
 
 .heroSubtitle {
   font-size: clamp(1rem, 2vw, 1.2rem);
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--gray-800);
   margin-bottom: 1.1rem;
   max-width: 700px;
   margin-left: auto;
