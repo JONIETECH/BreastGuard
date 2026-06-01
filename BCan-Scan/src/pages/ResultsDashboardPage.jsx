@@ -4,7 +4,7 @@ import { colors } from '../utils/colors.js';
 import { FiTrendingUp, FiCheck, FiAlertCircle } from 'react-icons/fi';
 
 export default function ResultsDashboardPage() {
-  const { predictions, riskFactors } = useAppStore();
+  const { predictions } = useAppStore();
 
   if (predictions.length === 0) {
     return (
@@ -14,26 +14,59 @@ export default function ResultsDashboardPage() {
           <FiAlertCircle size={48} style={{ color: 'var(--warning)', marginBottom: '1rem' }} />
           <h3>No Results Yet</h3>
           <p style={{ color: 'var(--gray-600)', marginBottom: '1.5rem' }}>
-            Complete a risk assessment or image upload to see results here.
+            Run a case analysis or image upload to see results here.
           </p>
         </Card>
       </div>
     );
   }
 
-  const riskPredictions = predictions.filter((p) => p.level);
-  const classificationPredictions = predictions.filter((p) => p.classification);
+  const apiPredictions = predictions.filter((p) => p.analysisType === 'api');
+  const legacyRiskPredictions = predictions.filter((p) => p.level && p.analysisType !== 'api');
+  const legacyClassificationPredictions = predictions.filter((p) => p.classification && p.analysisType !== 'api');
 
   return (
     <div style={styles.container}>
       <h1>Results Dashboard</h1>
 
-      {/* Risk Predictions */}
-      {riskPredictions.length > 0 && (
+      {apiPredictions.length > 0 && (
         <section style={styles.section}>
-          <h2>Risk Assessment Results</h2>
+          <h2>API Inference Results</h2>
           <div style={styles.resultGrid}>
-            {riskPredictions.map((prediction, idx) => (
+            {apiPredictions.map((prediction, idx) => (
+              <Card
+                key={idx}
+                title={prediction.classification}
+                badge={`${prediction.confidence}%`}
+                badgeVariant={prediction.classification === 'Benign' ? 'success' : prediction.classification === 'Malignant' ? 'danger' : 'warning'}
+              >
+                <div style={styles.resultContent}>
+                  <p style={{ marginBottom: '1rem', fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                    {prediction.report}
+                  </p>
+                  {prediction.attentionMap && (
+                    <img
+                      src={prediction.attentionMap}
+                      alt="attention map"
+                      style={{ width: '100%', borderRadius: '0.5rem', marginBottom: '1rem' }}
+                    />
+                  )}
+                  <p style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>
+                    Confidence: {prediction.confidence}%
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Risk Predictions */}
+      {legacyRiskPredictions.length > 0 && (
+        <section style={styles.section}>
+          <h2>Case Analysis Results</h2>
+          <div style={styles.resultGrid}>
+            {legacyRiskPredictions.map((prediction, idx) => (
               <Card
                 key={idx}
                 title={`Risk Level: ${prediction.level}`}
@@ -74,11 +107,11 @@ export default function ResultsDashboardPage() {
       )}
 
       {/* Classification Results */}
-      {classificationPredictions.length > 0 && (
+      {legacyClassificationPredictions.length > 0 && (
         <section style={styles.section}>
           <h2>Image Classification Results</h2>
           <div style={styles.resultGrid}>
-            {classificationPredictions.map((prediction, idx) => (
+            {legacyClassificationPredictions.map((prediction, idx) => (
               <Card
                 key={idx}
                 title={prediction.classification}
@@ -122,29 +155,29 @@ export default function ResultsDashboardPage() {
               <span style={styles.summaryValue}>{predictions.length}</span>
             </div>
             <div style={styles.summaryItem}>
-              <span style={styles.summaryLabel}>Risk Assessments:</span>
-              <span style={styles.summaryValue}>{riskPredictions.length}</span>
+              <span style={styles.summaryLabel}>Case Analyses:</span>
+              <span style={styles.summaryValue}>{legacyRiskPredictions.length + apiPredictions.length}</span>
             </div>
             <div style={styles.summaryItem}>
               <span style={styles.summaryLabel}>Image Classifications:</span>
-              <span style={styles.summaryValue}>{classificationPredictions.length}</span>
+              <span style={styles.summaryValue}>{legacyClassificationPredictions.length}</span>
             </div>
 
-            {riskPredictions.length > 0 && (
+            {apiPredictions.length > 0 && (
               <div style={styles.summaryItem}>
-                <span style={styles.summaryLabel}>Latest Risk Level:</span>
+                <span style={styles.summaryLabel}>Latest AI Result:</span>
                 <span
                   style={{
                     ...styles.summaryValue,
                     color:
-                      riskPredictions[riskPredictions.length - 1].level === 'High'
+                      apiPredictions[apiPredictions.length - 1].classification === 'Malignant'
                         ? colors.danger
-                        : riskPredictions[riskPredictions.length - 1].level === 'Medium'
-                          ? colors.warning
-                          : colors.success,
+                        : apiPredictions[apiPredictions.length - 1].classification === 'Benign'
+                          ? colors.success
+                          : colors.warning,
                   }}
                 >
-                  {riskPredictions[riskPredictions.length - 1].level}
+                  {apiPredictions[apiPredictions.length - 1].classification}
                 </span>
               </div>
             )}

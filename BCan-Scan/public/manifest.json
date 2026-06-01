@@ -32,19 +32,6 @@
   "categories": ["medical", "health"],
   "shortcuts": [
     {
-      "name": "Risk Assessment",
-      "short_name": "Assessment",
-      "description": "Start a new risk assessment",
-      "url": "/risk-assessment",
-      "icons": [
-        {
-          "src": "/icon-96.svg",
-          "sizes": "96x96",
-          "type": "image/svg+xml"
-        }
-      ]
-    },
-    {
       "name": "Upload Image",
       "short_name": "Upload",
       "description": "Upload histopathology images",

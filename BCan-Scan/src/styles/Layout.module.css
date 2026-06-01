@@ -228,7 +228,7 @@
 .footer {
   background: linear-gradient(135deg, #0a4440 0%, #0d1f2d 100%);
   color: rgba(255, 255, 255, 0.8);
-  margin-top: auto;
+  margin-top: 0px;
   border-top: 3px solid var(--secondary);
 }
 

@@ -12,6 +12,7 @@ import {
   FiInfo,
 } from 'react-icons/fi';
 import styles from '../styles/Layout.module.css';
+import fullLogo from '../assets/full-logo.webp';
 
 export default function Layout({ children }) {
   const location = useLocation();
@@ -24,8 +25,6 @@ export default function Layout({ children }) {
 
   const navItems = [
     { path: '/', icon: FiHome, label: 'Home' },
-    { path: '/risk-assessment', icon: FiActivity, label: 'Assessment' },
-    { path: '/image-upload', icon: FiImage, label: 'Upload' },
     { path: '/assistant', icon: FiMessageCircle, label: 'Assistant', highlight: true },
     { path: '/results', icon: FiPieChart, label: 'Results' },
     { path: '/history', icon: FiClock, label: 'History' },
@@ -72,11 +71,8 @@ export default function Layout({ children }) {
             </button>
 
             <Link to="/" className={styles.logo} onClick={closeSidebar}>
-            <span className={styles.logoIcon}>
-              <FiActivity />
-            </span>
-            <span className={styles.logoText}>BreastGuard</span>
-          </Link>
+              <img src={fullLogo} alt="BreastGuard AI" style={{ height: '32px' }} />
+            </Link>
           </div>
 
           <div className={styles.authButtons}>
@@ -99,8 +95,7 @@ export default function Layout({ children }) {
           {/* Brand */}
           <div className={styles.footerBrand}>
             <div className={styles.footerLogo}>
-              <span className={styles.footerLogoIcon}><FiActivity /></span>
-              <span>BreastGuard AI</span>
+              <img src={fullLogo} alt="BreastGuard AI" style={{ height: '40px' }} />
             </div>
             <p className={styles.footerTagline}>
               AI-powered breast cancer screening support for early detection
@@ -112,8 +107,6 @@ export default function Layout({ children }) {
           <div>
             <h4 className={styles.footerSectionTitle}>Quick Links</h4>
             <ul className={styles.footerLinksList}>
-              <li><Link to="/risk-assessment" className={styles.footerLink}>Risk Assessment</Link></li>
-              <li><Link to="/image-upload" className={styles.footerLink}>Image Upload</Link></li>
               <li><Link to="/assistant" className={styles.footerLink}>AI Assistant</Link></li>
             </ul>
           </div>

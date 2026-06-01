@@ -27,7 +27,7 @@ export const predictRisk = async (factors) => {
 };
 
 // Mock service for image classification
-export const classifyImage = async (imageData) => {
+export const classifyImage = async () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const isMemoryTest = Math.random();

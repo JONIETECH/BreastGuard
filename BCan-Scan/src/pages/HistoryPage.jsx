@@ -42,8 +42,10 @@ export default function HistoryPage() {
             <div style={styles.cardHeader}>
               <div>
                 <h3 style={styles.sessionTitle}>
-                  {session.type === 'risk_assessment'
-                    ? 'Risk Assessment'
+                  {session.type === 'assistant_case'
+                    ? 'Clinical Case Review'
+                    : session.type === 'risk_assessment'
+                      ? 'Risk Assessment'
                     : 'Image Upload'}
                 </h3>
                 <p style={styles.timestamp}>
@@ -112,6 +114,118 @@ export default function HistoryPage() {
               </div>
             )}
 
+            {session.type === 'api_assessment' && session.result && (
+              <div style={styles.resultSection}>
+                <h4>AI Report</h4>
+                <div style={styles.riskResult}>
+                  <div
+                    style={{
+                      ...styles.riskBadge,
+                      backgroundColor:
+                        session.result.classification === 'Malignant'
+                          ? colors.malignantBg
+                          : session.result.classification === 'Benign'
+                            ? colors.benignBg
+                            : colors.riskMediumBg,
+                      color:
+                        session.result.classification === 'Malignant'
+                          ? colors.malignantText
+                          : session.result.classification === 'Benign'
+                            ? colors.benignText
+                            : colors.riskMediumText,
+                    }}
+                  >
+                    {session.result.classification}
+                  </div>
+                  <span style={styles.scoreText}>
+                    Confidence: {session.result.confidence}%
+                  </span>
+                </div>
+
+                <p style={{ marginTop: '1rem', color: 'var(--gray-600)' }}>
+                  {session.result.report}
+                </p>
+
+                {session.result.attentionMap && (
+                  <img
+                    src={session.result.attentionMap}
+                    alt="attention map"
+                    style={{ width: '100%', marginTop: '1rem', borderRadius: '0.5rem' }}
+                  />
+                )}
+
+                {session.factors && (
+                  <div style={styles.factorsSection}>
+                    <h5>Factors</h5>
+                    <ul style={styles.factorsList}>
+                      <li>Age: {session.factors.age} years</li>
+                      <li>Family History: {session.factors.familyHistory}</li>
+                      {session.symptomDuration && <li>Symptom Duration: {session.symptomDuration} weeks</li>}
+                      <li>Reproductive History: {session.factors.reproductiveHistory}</li>
+                      <li>Obesity Status: {session.factors.obesityStatus}</li>
+                      <li>Lifestyle Factors: {session.factors.lifestyleFactors}</li>
+                      {session.clinicalQuery && <li>Query: {session.clinicalQuery}</li>}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {session.type === 'assistant_case' && session.result && (
+              <div style={styles.resultSection}>
+                <h4>Clinical Case Review</h4>
+                <div style={styles.riskResult}>
+                  <div
+                    style={{
+                      ...styles.riskBadge,
+                      backgroundColor:
+                        session.result.classification === 'Malignant'
+                          ? colors.malignantBg
+                          : session.result.classification === 'Benign'
+                            ? colors.benignBg
+                            : colors.riskMediumBg,
+                      color:
+                        session.result.classification === 'Malignant'
+                          ? colors.malignantText
+                          : session.result.classification === 'Benign'
+                            ? colors.benignText
+                            : colors.riskMediumText,
+                    }}
+                  >
+                    {session.result.classification}
+                  </div>
+                  <span style={styles.scoreText}>
+                    Confidence: {session.result.confidence}%
+                  </span>
+                </div>
+
+                <p style={{ marginTop: '1rem', color: 'var(--gray-600)' }}>
+                  {session.result.report}
+                </p>
+
+                {session.result.attentionMap && (
+                  <img
+                    src={session.result.attentionMap}
+                    alt="attention map"
+                    style={{ width: '100%', marginTop: '1rem', borderRadius: '0.5rem' }}
+                  />
+                )}
+
+                {session.factors && (
+                  <div style={styles.factorsSection}>
+                    <h5>Case Details</h5>
+                    <ul style={styles.factorsList}>
+                      <li>Age: {session.factors.age} years</li>
+                      <li>Symptom Duration: {session.factors.symptomDuration} weeks</li>
+                      <li>Family History: {session.factors.familyHistory}</li>
+                      <li>Reproductive History: {session.factors.reproductiveHistory}</li>
+                      <li>Query: {session.factors.query}</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
             {session.type === 'image_upload' && session.results && (
               <div style={styles.resultSection}>
                 <h4>Classification Results</h4>
@@ -121,18 +235,12 @@ export default function HistoryPage() {
                       key={id}
                       style={{
                         ...styles.classificationItem,
-                        backgroundColor:
-                          result.classification === 'Benign'
-                            ? colors.benignBg
-                            : colors.malignantBg,
+                        backgroundColor: result.classification === 'Benign' ? colors.benignBg : colors.malignantBg,
                       }}
                     >
                       <div
                         style={{
-                          color:
-                            result.classification === 'Benign'
-                              ? colors.benignText
-                              : colors.malignantText,
+                          color: result.classification === 'Benign' ? colors.benignText : colors.malignantText,
                           fontWeight: '600',
                         }}
                       >
@@ -152,6 +260,17 @@ export default function HistoryPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {session.type === 'image_upload' && session.results && Object.values(session.results).some((result) => result.report) && (
+              <div style={styles.resultSection}>
+                <h4>AI Reports</h4>
+                {Object.entries(session.results).map(([id, result]) => (
+                  <div key={id} style={{ marginTop: '1rem' }}>
+                    <p style={{ margin: 0, color: 'var(--gray-600)' }}>{result.report}</p>
+                  </div>
+                ))}
               </div>
             )}
           </Card>
@@ -228,15 +347,8 @@ const styles = {
     borderRadius: '0.375rem',
   },
   factorsList: {
-    paddingLeft: '1.25rem',
-    margin: '0.5rem 0 0 0',
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '0.5rem',
     listStyle: 'none',
     paddingLeft: 0,
-  },
-  factorsList: {
     margin: '0.5rem 0 0 0',
     display: 'flex',
     flexDirection: 'column',

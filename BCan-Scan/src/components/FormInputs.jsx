@@ -144,7 +144,7 @@ export function RadioGroup({
   );
 }
 
-export function ProgressBar({ progress, showLabel = true }) {
+export function ProgressBar({ progress }) {
   return (
     <div className={styles.progressBar}>
       <div

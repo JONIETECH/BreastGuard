@@ -44,16 +44,16 @@ export default function AboutPage() {
         <h2 className={styles.sectionTitle}>Key Features</h2>
         <div className={styles.featuresGrid}>
           <article className={styles.featureTile}>
-            <h4>Risk Assessment</h4>
-            <p>Predicts breast cancer risk using clinical and lifestyle factors.</p>
+            <h4>Case Analysis</h4>
+            <p>Runs a single structured case through the deployed Hugging Face model.</p>
           </article>
           <article className={styles.featureTile}>
             <h4>Image Analysis</h4>
             <p>Classifies uploaded histopathology images with confidence scores.</p>
           </article>
           <article className={styles.featureTile}>
-            <h4>AI Assistant</h4>
-            <p>Provides educational guidance and answers screening-related questions.</p>
+            <h4>Clinical Assistant</h4>
+            <p>Provides grounded clinical reports and image explanations in one workspace.</p>
           </article>
           <article className={styles.featureTile}>
             <h4>History Tracking</h4>
