@@ -5,7 +5,7 @@
 }
 
 .spinner {
-  animation: pulse-spin 2s infinite ease-in-out;
+  animation: pulse-spin 1s infinite ease-in-out;
 }
 
 @keyframes pulse-spin {
