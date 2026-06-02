@@ -47,10 +47,10 @@ export default function HomePage() {
                 Download the BreastGuard AI mobile app to track your history, perform rapid AI assessments on the go, and receive push notifications for clinical updates.
               </p>
               <div className={styles.downloadButtons}>
-                <a href="#" className={styles.storeLink}>
+                <a href="https://apkpure.com/p/com.bcanscan.jonietech" className={styles.storeLink}>
                   <img src={appleStoreImg} alt="Download on the App Store" className={styles.storeImg} />
                 </a>
-                <a href="#" className={styles.storeLink}>
+                <a href="https://apkpure.com/p/com.bcanscan.jonietech" className={styles.storeLink}>
                   <img src={googlePlayImg} alt="Get it on Google Play" className={styles.storeImg} />
                 </a>
               </div>
