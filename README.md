@@ -218,7 +218,5 @@ This project is part of academic research at Makerere University. All rights res
 ---
 
 <p align="center">
-  <sub>Built with ❤️ for better healthcare in Uganda</sub>
-  <br>
-  <sub>© 2024 Makerere University Group 11</sub>
+  <sub>© 2026 Makerere University Group 11</sub>
 </p>
