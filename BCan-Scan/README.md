@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="src/assets/logo%20wordmark.webp" alt="BreastGuard Logo" width="300">
-  <h1>BreastGuard Web Application</h1>
+  <img src="src/assets/full-logo.webp" alt="BreastGuard Logo" width="300">
+  <h1>Web Application</h1>
   <p><strong>AI-Powered Breast Cancer Screening Platform</strong></p>
   <p>
     <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">

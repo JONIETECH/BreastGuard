@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="assets/logo%20wordmark.webp" alt="BreastGuard Logo" width="300">
-  <h1>BreastGuard Mobile App</h1>
+  <img src="assets/full-logo.webp" alt="BreastGuard Logo" width="300">
+  <h1>Mobile App</h1>
   <p><strong>AI-Powered Breast Cancer Screening for Android</strong></p>
   <p>
     <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter">
