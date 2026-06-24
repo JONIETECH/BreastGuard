@@ -71,7 +71,7 @@ BreastGuard/
 - View guideline-grounded clinical reports
 - Offline capability with local data caching
 
-**Tech Stack:** Flutter, Dart, Firebase (Auth, Firestore, Storage)
+**Tech Stack:** Flutter, Dart, BreastGuard API (Prisma + Neon Postgres), flutter_secure_storage
 
 [📱 View Mobile App README](./bcan/README.md)
 
@@ -88,7 +88,7 @@ BreastGuard/
 - Visual Grad-CAM explanations
 - Patient history tracking
 
-**Tech Stack:** React 18+, Vite, TypeScript, Tailwind CSS, shadcn/ui, Zustand
+**Tech Stack:** React 18+, Vite, TypeScript, Tailwind CSS, shadcn/ui, Zustand, Prisma + Neon Postgres
 
 [🌐 View Web App README](./BCan-Scan/README.md)
 

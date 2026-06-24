@@ -5,8 +5,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../providers/scan_provider.dart';
 
 class AssistantChatPage extends StatefulWidget {
   const AssistantChatPage({super.key});
@@ -17,6 +19,7 @@ class AssistantChatPage extends StatefulWidget {
 
 class _AssistantChatPageState extends State<AssistantChatPage> {
   File? _selectedImage;
+  final TextEditingController _patientNumberController = TextEditingController();
   double _age = 45;
   double _symptomDur = 4;
   String _famHist = 'No';
@@ -32,6 +35,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
 
   @override
   void dispose() {
+    _patientNumberController.dispose();
     _queryController.dispose();
     super.dispose();
   }
@@ -63,6 +67,14 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       return;
     }
 
+    final patientNumber = _patientNumberController.text.trim();
+    if (patientNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a patient number.')),
+      );
+      return;
+    }
+
     setState(() {
       _isAssessing = true;
       _clinicalReport = null;
@@ -71,9 +83,10 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     });
 
     try {
-      final Uri uri = Uri.parse(dotenv.env['API_BASE_URL']!);
+      final baseUrl = dotenv.env['API_BASE_URL']!;
+      final Uri uri = Uri.parse('$baseUrl/api/inference');
 
-      // The Vercel /api/inference endpoint requires multipart/form-data with
+      // The /api/inference endpoint requires multipart/form-data with
       // the image as the "image" field — NOT JSON with a base64 data URI.
       final request = http.MultipartRequest('POST', uri);
 
@@ -88,11 +101,12 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       ));
 
       // Attach the text fields
-      request.fields['age']         = _age.toInt().toString();
-      request.fields['symptom_dur'] = _symptomDur.toString();
-      request.fields['fam_hist']    = _famHist;
-      request.fields['repro_hist']  = _reproHist;
-      request.fields['query']       = _queryController.text;
+      request.fields['patient_number'] = patientNumber;
+      request.fields['age']              = _age.toInt().toString();
+      request.fields['symptom_dur']      = _symptomDur.toString();
+      request.fields['fam_hist']         = _famHist;
+      request.fields['repro_hist']       = _reproHist;
+      request.fields['query']            = _queryController.text;
 
       final http.StreamedResponse streamed = await request.send();
       final http.Response response = await http.Response.fromStream(streamed);
@@ -120,6 +134,22 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
           _clinicalReport = data['report'] as String? ?? 'No report generated.';
           _gradCamBase64  = gradCam;
         });
+
+        if (mounted) {
+          context.read<ScanProvider>().addScan(
+            Scan(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              patientNumber: patientNumber,
+              classification: data['classification'] as String? ?? 'Review Required',
+              confidence: (data['confidence'] as num?)?.toInt() ?? 0,
+              level: data['level'] as String? ?? 'Medium',
+              score: (data['score'] as num?)?.toInt() ?? 50,
+              report: data['report'] as String? ?? 'No report generated.',
+              timestamp: DateTime.now(),
+              gradCamBase64: gradCam,
+            ),
+          );
+        }
       } else {
         throw Exception('API returned status code ${response.statusCode}: ${response.body}');
       }
@@ -177,6 +207,22 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
                     ),
             ),
           ),
+          const SizedBox(height: 16),
+
+          // Patient Number
+          TextField(
+            controller: _patientNumberController,
+            enabled: !_isAssessing,
+            decoration: const InputDecoration(
+              labelText: 'Patient Number',
+              hintText: 'e.g., PN-2026-00123',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.badge_outlined),
+            ),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+          ),
+          
           const SizedBox(height: 16),
           
           // Sliders

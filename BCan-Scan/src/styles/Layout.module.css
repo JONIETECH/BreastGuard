@@ -197,6 +197,52 @@
   color: whitesmoke;
 }
 
+.authLoading {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--gray-700);
+  font-weight: 500;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoutBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.625rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.logoutBtn:hover {
+  color: var(--danger);
+  border-color: rgba(220, 38, 38, 0.4);
+  background: rgba(220, 38, 38, 0.08);
+}
+
 .mobileMenuButton {
   display: inline-flex;
   align-items: center;

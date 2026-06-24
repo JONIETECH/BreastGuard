@@ -43,6 +43,66 @@ Liveness probe. Flutter uses this to check connectivity before sending a case.
 
 ---
 
+### Auth endpoints
+
+The same handlers are exposed locally here and as Vercel serverless functions in `api/auth/`.
+
+#### `POST /api/auth/signup`
+
+Create a new account.
+
+**Request:**
+```json
+{
+  "email": "you@example.com",
+  "password": "min-8-chars",
+  "fullName": "Your Name"
+}
+```
+
+**Response 201:**
+```json
+{
+  "user": {
+    "id": "...",
+    "email": "you@example.com",
+    "fullName": "Your Name",
+    "role": "CLINICIAN",
+    "createdAt": "..."
+  }
+}
+```
+
+#### `POST /api/auth/login`
+
+Authenticate and receive an `httpOnly` cookie. The Flutter app also receives a `token` field for mobile storage.
+
+**Request:**
+```json
+{
+  "email": "you@example.com",
+  "password": "..."
+}
+```
+
+**Response 200:**
+```json
+{
+  "user": { ... },
+  "token": "jwt-for-mobile"
+}
+```
+
+#### `GET /api/auth/me`
+
+Return the current authenticated user. Reads the `httpOnly` cookie or an `Authorization: Bearer <token>` header.
+
+#### `POST /api/auth/logout`
+
+Clear the auth cookie.
+
+---
+
 ### `POST /api/inference`
 Runs the full AI inference pipeline.
 

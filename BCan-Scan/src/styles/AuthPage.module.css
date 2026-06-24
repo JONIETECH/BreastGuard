@@ -83,6 +83,13 @@
   margin-top: 0.25rem;
 }
 
+.authError {
+  color: var(--danger);
+  font-size: 0.875rem;
+  text-align: center;
+  margin: -0.25rem 0 0.25rem;
+}
+
 .authSwitch {
   font-size: 0.875rem;
   color: var(--gray-600);

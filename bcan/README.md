@@ -27,10 +27,10 @@ The **BreastGuard Mobile App** is a Flutter-based Android application developed 
 |-----------|------------|
 | Framework | Flutter 3.x |
 | Language | Dart |
-| Backend | Firebase (Auth, Firestore, Storage) |
+| Backend | BreastGuard API (Node.js + Prisma + Neon Postgres) |
 | AI Integration | Hugging Face Inference API |
-| State Management | Provider / Riverpod |
-| Local Storage | Hive / SharedPreferences |
+| State Management | Provider |
+| Local Storage | flutter_secure_storage |
 
 ## Project Structure
 
@@ -69,9 +69,11 @@ lib/
    flutter pub get
    ```
 
-3. Configure Firebase:
-   - Add your `google-services.json` to `android/app/`
-   - Update Firebase configuration in `lib/services/firebase_service.dart`
+3. Configure environment:
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and set `API_BASE_URL` to your BreastGuard backend (e.g., `http://localhost:3001` for local dev or your Vercel URL).
 
 4. Run the app:
    ```bash

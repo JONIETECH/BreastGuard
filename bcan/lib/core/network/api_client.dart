@@ -3,13 +3,24 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import '../secure_storage.dart';
+
 class ApiClient {
   ApiClient({http.Client? client})
-    : baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:3001/api/inference',
+    : baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:3001',
       _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
+
+  Future<Map<String, String>> _headers() async {
+    final token = await AuthStorage.readToken();
+    final headers = <String, String>{'Content-Type': 'application/json'};
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    return headers;
+  }
 
   Future<Map<String, dynamic>> postJson(
     String path,
@@ -18,16 +29,22 @@ class ApiClient {
     final uri = Uri.parse('$baseUrl$path');
     final response = await _client.post(
       uri,
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(),
       body: jsonEncode(body),
     );
 
     return _decodeResponse(response);
   }
 
+  Future<Map<String, dynamic>> getJson(String path) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final response = await _client.get(uri, headers: await _headers());
+    return _decodeResponse(response);
+  }
+
   Future<List<dynamic>> getJsonList(String path) async {
     final uri = Uri.parse('$baseUrl$path');
-    final response = await _client.get(uri);
+    final response = await _client.get(uri, headers: await _headers());
     final decoded = _decodeRaw(response);
 
     if (decoded is List<dynamic>) {

@@ -1,33 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   FiMenu,
   FiX,
-  FiActivity,
   FiHome,
-  FiImage,
   FiPieChart,
   FiMessageCircle,
-  FiClock,
   FiInfo,
+  FiUser,
+  FiLogOut,
 } from 'react-icons/fi';
 import styles from '../styles/Layout.module.css';
 import fullLogo from '../assets/full-logo.webp';
+import { useAuthStore } from '../store/authStore';
+import { fetchMe, logout } from '../services/authApi';
 
 export default function Layout({ children }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearUser = useAuthStore((state) => state.clearUser);
+  const setLoading = useAuthStore((state) => state.setLoading);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchMe()
+      .then((data) => {
+        if (mounted) setUser(data.user);
+      })
+      .catch(() => {
+        if (mounted) clearUser();
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => { mounted = false; };
+  }, [setUser, clearUser, setLoading]);
 
   const isActive = (path) => location.pathname === path;
 
   const closeSidebar = () => setSidebarOpen(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // ignore network errors during logout
+    }
+    clearUser();
+  };
+
   const navItems = [
     { path: '/', icon: FiHome, label: 'Home' },
     { path: '/assistant', icon: FiMessageCircle, label: 'Assistant', highlight: true },
     { path: '/results', icon: FiPieChart, label: 'Results' },
-    { path: '/history', icon: FiClock, label: 'History' },
     { path: '/about', icon: FiInfo, label: 'About' },
   ];
 
@@ -76,12 +105,29 @@ export default function Layout({ children }) {
           </div>
 
           <div className={styles.authButtons}>
-            <Link to="/login" className={styles.loginBtn}>
-              <span>Login</span>
-            </Link>
-            <Link to="/signup" className={styles.signupBtn}>
-              <span>Sign Up</span>
-            </Link>
+            {loading ? (
+              <span className={styles.authLoading}>Loading...</span>
+            ) : user ? (
+              <div className={styles.userActions}>
+                <span className={styles.userName}>
+                  <FiUser size={18} />
+                  <span>{user.fullName || user.email}</span>
+                </span>
+                <button className={styles.logoutBtn} onClick={handleLogout} aria-label="Logout">
+                  <FiLogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className={styles.loginBtn}>
+                  <span>Login</span>
+                </Link>
+                <Link to="/signup" className={styles.signupBtn}>
+                  <span>Sign Up</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>

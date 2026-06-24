@@ -1,189 +1,151 @@
+import { useState } from 'react';
 import { useAppStore } from '../store/appStore';
 import Card from '../components/Card';
 import { colors } from '../utils/colors.js';
-import { FiTrendingUp, FiCheck, FiAlertCircle } from 'react-icons/fi';
+import { formatDate } from '../utils/helpers';
+import { FiAlertCircle, FiUser } from 'react-icons/fi';
 
 export default function ResultsDashboardPage() {
   const { predictions } = useAppStore();
+  const [selectedId, setSelectedId] = useState(null);
+
+  const sorted = [...predictions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const selected = sorted.find((p) => p.id === selectedId) || sorted[0];
 
   if (predictions.length === 0) {
     return (
       <div style={styles.container}>
-        <h1>Results Dashboard</h1>
+        <h1>Patient Results</h1>
         <Card highlight={true} style={{ textAlign: 'center', padding: '3rem' }}>
           <FiAlertCircle size={48} style={{ color: 'var(--warning)', marginBottom: '1rem' }} />
           <h3>No Results Yet</h3>
           <p style={{ color: 'var(--gray-600)', marginBottom: '1.5rem' }}>
-            Run a case analysis or image upload to see results here.
+            Run a case analysis in the Assistant to see results here.
           </p>
         </Card>
       </div>
     );
   }
 
-  const apiPredictions = predictions.filter((p) => p.analysisType === 'api');
-  const legacyRiskPredictions = predictions.filter((p) => p.level && p.analysisType !== 'api');
-  const legacyClassificationPredictions = predictions.filter((p) => p.classification && p.analysisType !== 'api');
-
   return (
     <div style={styles.container}>
-      <h1>Results Dashboard</h1>
+      <h1>Patient Results</h1>
+      <p style={styles.subtitle}>Select a scan to view the full report.</p>
 
-      {apiPredictions.length > 0 && (
-        <section style={styles.section}>
-          <h2>API Inference Results</h2>
-          <div style={styles.resultGrid}>
-            {apiPredictions.map((prediction, idx) => (
-              <Card
-                key={idx}
-                title={prediction.classification}
-                badge={`${prediction.confidence}%`}
-                badgeVariant={prediction.classification === 'Benign' ? 'success' : prediction.classification === 'Malignant' ? 'danger' : 'warning'}
-              >
-                <div style={styles.resultContent}>
-                  <p style={{ marginBottom: '1rem', fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-                    {prediction.report}
-                  </p>
-                  {prediction.attentionMap && (
-                    <img
-                      src={prediction.attentionMap}
-                      alt="attention map"
-                      style={{ width: '100%', borderRadius: '0.5rem', marginBottom: '1rem' }}
-                    />
-                  )}
-                  <p style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-                    Confidence: {prediction.confidence}%
-                  </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Risk Predictions */}
-      {legacyRiskPredictions.length > 0 && (
-        <section style={styles.section}>
-          <h2>Case Analysis Results</h2>
-          <div style={styles.resultGrid}>
-            {legacyRiskPredictions.map((prediction, idx) => (
-              <Card
-                key={idx}
-                title={`Risk Level: ${prediction.level}`}
-                badge={`${prediction.score}/100`}
-                badgeVariant={
-                  prediction.level === 'High'
-                    ? 'danger'
-                    : prediction.level === 'Medium'
-                      ? 'warning'
-                      : 'success'
-                }
-              >
-                <div style={styles.resultContent}>
-                  <div style={styles.scoreBar}>
-                    <div
-                      style={{
-                        ...styles.scoreBarFill,
-                        width: `${prediction.score}%`,
-                        backgroundColor:
-                          prediction.level === 'High'
-                            ? colors.danger
-                            : prediction.level === 'Medium'
-                              ? colors.warning
-                              : colors.success,
-                      }}
-                    />
-                  </div>
-                  <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-                    {prediction.level === 'High' && 'HIGH RISK - Urgent consultation recommended'}
-                    {prediction.level === 'Medium' && 'MODERATE RISK - Regular monitoring advised'}
-                    {prediction.level === 'Low' && 'LOW RISK - Continue standard screening'}
-                  </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Classification Results */}
-      {legacyClassificationPredictions.length > 0 && (
-        <section style={styles.section}>
-          <h2>Image Classification Results</h2>
-          <div style={styles.resultGrid}>
-            {legacyClassificationPredictions.map((prediction, idx) => (
-              <Card
-                key={idx}
-                title={prediction.classification}
-                badge={`${prediction.confidence.toFixed(1)}%`}
-                badgeVariant={prediction.classification === 'Benign' ? 'success' : 'danger'}
-              >
-                <div style={styles.resultContent}>
-                  <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                    {prediction.classification === 'Benign' ? (
-                      <FiCheck size={40} style={{ color: 'var(--success)' }} />
-                    ) : (
-                      <FiAlertCircle size={40} style={{ color: 'var(--danger)' }} />
-                    )}
-                  </div>
-                  <div style={styles.confidenceBar}>
-                    <div
-                      style={{
-                        ...styles.confidenceBarFill,
-                        width: `${prediction.confidence}%`,
-                        backgroundColor:
-                          prediction.classification === 'Benign' ? colors.success : colors.danger,
-                      }}
-                    />
-                  </div>
-                  <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-                    Confidence: {prediction.confidence.toFixed(1)}%
-                  </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Summary */}
-      <section style={styles.section}>
-        <Card title="Assessment Summary">
-          <div style={styles.summaryContent}>
-            <div style={styles.summaryItem}>
-              <span style={styles.summaryLabel}>Total Predictions:</span>
-              <span style={styles.summaryValue}>{predictions.length}</span>
-            </div>
-            <div style={styles.summaryItem}>
-              <span style={styles.summaryLabel}>Case Analyses:</span>
-              <span style={styles.summaryValue}>{legacyRiskPredictions.length + apiPredictions.length}</span>
-            </div>
-            <div style={styles.summaryItem}>
-              <span style={styles.summaryLabel}>Image Classifications:</span>
-              <span style={styles.summaryValue}>{legacyClassificationPredictions.length}</span>
-            </div>
-
-            {apiPredictions.length > 0 && (
-              <div style={styles.summaryItem}>
-                <span style={styles.summaryLabel}>Latest AI Result:</span>
+      <div style={styles.layout}>
+        <div style={styles.listColumn}>
+          {sorted.map((prediction) => (
+            <button
+              key={prediction.id}
+              onClick={() => setSelectedId(prediction.id)}
+              style={{
+                ...styles.listItem,
+                ...(selected?.id === prediction.id ? styles.listItemActive : {}),
+              }}
+            >
+              <div style={styles.listHeader}>
+                <span style={styles.listTitle}>
+                  {prediction.patientNumber ? `Patient ${prediction.patientNumber}` : 'Unnamed Patient'}
+                </span>
                 <span
                   style={{
-                    ...styles.summaryValue,
+                    ...styles.badge,
+                    backgroundColor:
+                      prediction.classification === 'Malignant'
+                        ? colors.malignantBg
+                        : prediction.classification === 'Benign'
+                        ? colors.benignBg
+                        : colors.riskMediumBg,
                     color:
-                      apiPredictions[apiPredictions.length - 1].classification === 'Malignant'
-                        ? colors.danger
-                        : apiPredictions[apiPredictions.length - 1].classification === 'Benign'
-                          ? colors.success
-                          : colors.warning,
+                      prediction.classification === 'Malignant'
+                        ? colors.malignantText
+                        : prediction.classification === 'Benign'
+                        ? colors.benignText
+                        : colors.riskMediumText,
                   }}
                 >
-                  {apiPredictions[apiPredictions.length - 1].classification}
+                  {prediction.classification}
                 </span>
               </div>
-            )}
-          </div>
-        </Card>
-      </section>
+              <div style={styles.listMeta}>
+                <span>{prediction.timestamp ? formatDate(prediction.timestamp) : 'Just now'}</span>
+                <span style={styles.dot}>·</span>
+                <span>{prediction.confidence}% confidence</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div style={styles.detailColumn}>
+          {selected ? (
+            <Card>
+              <div style={styles.detailHeader}>
+                <div>
+                  <h2 style={styles.detailTitle}>
+                    {selected.patientNumber ? `Patient ${selected.patientNumber}` : 'Patient Result'}
+                  </h2>
+                  <p style={styles.detailMeta}>
+                    {selected.timestamp ? formatDate(selected.timestamp) : 'Just now'} · {selected.confidence}% confidence
+                  </p>
+                </div>
+                <span
+                  style={{
+                    ...styles.badge,
+                    backgroundColor:
+                      selected.classification === 'Malignant'
+                        ? colors.malignantBg
+                        : selected.classification === 'Benign'
+                        ? colors.benignBg
+                        : colors.riskMediumBg,
+                    color:
+                      selected.classification === 'Malignant'
+                        ? colors.malignantText
+                        : selected.classification === 'Benign'
+                        ? colors.benignText
+                        : colors.riskMediumText,
+                  }}
+                >
+                  {selected.classification}
+                </span>
+              </div>
+
+              <div style={styles.summaryGrid}>
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>Prediction</span>
+                  <strong>{selected.classification}</strong>
+                </div>
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>Signal</span>
+                  <strong>{selected.level}</strong>
+                </div>
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>Score</span>
+                  <strong>{selected.score}/100</strong>
+                </div>
+              </div>
+
+              <div style={styles.section}>
+                <h3 style={styles.sectionTitle}>Clinical Report</h3>
+                <p style={styles.reportText}>{selected.report}</p>
+              </div>
+
+              {selected.attentionMap && (
+                <div style={styles.section}>
+                  <h3 style={styles.sectionTitle}>Grad-CAM Explanation</h3>
+                  <img
+                    src={selected.attentionMap}
+                    alt="Tissue attention map"
+                    style={styles.attentionMap}
+                  />
+                  <p style={styles.caption}>
+                    Red / Yellow = regions most influential in the AI decision.
+                  </p>
+                </div>
+              )}
+            </Card>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
@@ -193,59 +155,125 @@ const styles = {
     maxWidth: '1200px',
     margin: '0 auto',
   },
-  section: {
-    marginBottom: '3rem',
+  subtitle: {
+    color: 'var(--gray-600)',
+    marginBottom: '1.5rem',
   },
-  resultGrid: {
+  layout: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
     gap: '1.5rem',
-    marginTop: '1.5rem',
+    alignItems: 'start',
   },
-  resultContent: {
-    padding: '1rem 0',
+  listColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
   },
-  scoreBar: {
+  listItem: {
     width: '100%',
-    height: '12px',
-    backgroundColor: 'var(--gray-200)',
-    borderRadius: '6px',
-    overflow: 'hidden',
+    textAlign: 'left',
+    backgroundColor: 'white',
+    border: '1px solid var(--gray-200)',
+    borderRadius: '0.75rem',
+    padding: '1rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
   },
-  scoreBarFill: {
-    height: '100%',
-    transition: 'width 0.3s ease',
+  listItemActive: {
+    borderColor: 'var(--secondary)',
+    boxShadow: '0 0 0 2px rgba(236, 72, 153, 0.15)',
   },
-  confidenceBar: {
-    width: '100%',
-    height: '8px',
-    backgroundColor: 'var(--gray-200)',
-    borderRadius: '4px',
-    overflow: 'hidden',
-  },
-  confidenceBarFill: {
-    height: '100%',
-    transition: 'width 0.3s ease',
-  },
-  summaryContent: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '2rem',
-  },
-  summaryItem: {
+  listHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: '1rem',
-    borderBottom: '1px solid var(--gray-200)',
+    gap: '0.75rem',
+    marginBottom: '0.5rem',
+  },
+  listTitle: {
+    fontWeight: 700,
+    color: 'var(--gray-900)',
+    fontSize: '0.95rem',
+  },
+  listMeta: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    fontSize: '0.8rem',
+    color: 'var(--gray-500)',
+  },
+  dot: {
+    fontWeight: 700,
+  },
+  badge: {
+    padding: '0.35rem 0.75rem',
+    borderRadius: '999px',
+    fontWeight: 600,
+    fontSize: '0.75rem',
+    whiteSpace: 'nowrap',
+  },
+  detailColumn: {
+    minWidth: 0,
+  },
+  detailHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '1rem',
+    marginBottom: '1.25rem',
+    flexWrap: 'wrap',
+  },
+  detailTitle: {
+    margin: '0 0 0.25rem',
+    color: 'var(--gray-900)',
+    fontSize: '1.3rem',
+  },
+  detailMeta: {
+    margin: 0,
+    color: 'var(--gray-500)',
+    fontSize: '0.875rem',
+  },
+  summaryGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+    gap: '0.75rem',
+    marginBottom: '1.5rem',
+  },
+  summaryItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.25rem',
+    padding: '0.75rem',
+    backgroundColor: 'var(--gray-50)',
+    borderRadius: '0.5rem',
+    border: '1px solid var(--gray-200)',
   },
   summaryLabel: {
-    fontWeight: '600',
-    color: 'var(--gray-600)',
+    fontSize: '0.8rem',
+    color: 'var(--gray-500)',
   },
-  summaryValue: {
-    fontSize: '1.5rem',
-    fontWeight: '700',
+  section: {
+    marginTop: '1.5rem',
+  },
+  sectionTitle: {
+    fontSize: '1rem',
     color: 'var(--primary)',
+    marginBottom: '0.75rem',
+  },
+  reportText: {
+    color: 'var(--gray-800)',
+    lineHeight: 1.7,
+    whiteSpace: 'pre-wrap',
+  },
+  attentionMap: {
+    width: '100%',
+    borderRadius: '0.75rem',
+    border: '1px solid var(--gray-200)',
+  },
+  caption: {
+    fontSize: '0.8rem',
+    color: 'var(--gray-500)',
+    marginTop: '0.5rem',
   },
 };

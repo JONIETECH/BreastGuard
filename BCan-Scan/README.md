@@ -92,10 +92,16 @@ src/
 3. Configure environment:
    ```bash
    cp .env.example .env
-   # Edit .env with your Hugging Face API token
+   # Edit .env with your Neon database URL and a strong JWT_SECRET
    ```
 
-4. Start development server:
+4. Set up the database:
+   ```bash
+   npx prisma migrate dev --name init
+   npx prisma generate
+   ```
+
+5. Start development server:
    ```bash
    npm run dev
    # or
@@ -104,7 +110,25 @@ src/
    pnpm dev
    ```
 
-5. Open http://localhost:5173 in your browser
+6. Open http://localhost:5173 in your browser
+
+### Auth Backend
+
+Authentication is backed by **Neon Postgres** via **Prisma**. The local dev server (`npm run server`) exposes the same endpoints that are deployed as Vercel serverless functions:
+
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/auth/logout`
+
+Required environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Neon Postgres connection string |
+| `JWT_SECRET` | Secret used to sign JWT tokens |
+| `JWT_EXPIRES_IN` | Token lifetime (default: `7d`) |
+| `BCRYPT_ROUNDS` | Password hashing cost (default: `12`) |
 
 ### Building for Production
 

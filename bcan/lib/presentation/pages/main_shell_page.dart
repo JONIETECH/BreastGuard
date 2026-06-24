@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_routes.dart';
+import '../providers/auth_provider.dart';
 import 'account_page.dart';
 import 'assistant_chat_page.dart';
 import 'home_page.dart';
@@ -34,6 +37,17 @@ class _MainShellPageState extends State<MainShellPage> {
     'AI Assistant',
     'Account',
   ];
+
+  void _onNavTap(BuildContext context, int index) {
+    if (index == 1) {
+      final auth = context.read<AuthProvider>();
+      if (!auth.isAuthenticated) {
+        Navigator.pushNamed(context, AppRoutes.login);
+        return;
+      }
+    }
+    setState(() => _index = index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +118,7 @@ class _MainShellPageState extends State<MainShellPage> {
                 for (int i = 0; i < _items.length; i++)
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _index = i),
+                      onTap: () => _onNavTap(context, i),
                       behavior: HitTestBehavior.opaque,
                       child: _AnimatedNavTile(
                         item: _items[i],

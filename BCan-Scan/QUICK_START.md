@@ -2,7 +2,17 @@
 
 ## ⚡ 5-Minute Setup
 
-### 1. Start Development Server
+### 1. Install dependencies and configure the database
+
+```bash
+npm install
+cp .env.example .env
+# Edit .env and add your Neon DATABASE_URL and JWT_SECRET
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
+### 2. Start Development Server
 ```bash
 npm run dev
 ```

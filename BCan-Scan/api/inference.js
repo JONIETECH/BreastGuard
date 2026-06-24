@@ -136,11 +136,12 @@ export default async function handler(req, res) {
       return String(Array.isArray(v) ? v[0] : v ?? def);
     };
 
-    const age        = Number(getField('age',         '45'));
-    const symptomDur = Number(getField('symptom_dur', '4'));
-    const famHist    =        getField('fam_hist',    'No');
-    const reproHist  =        getField('repro_hist',  'Normal');
-    const query      =        getField('query',       'What are the recommended next steps for this patient?');
+    const age           = Number(getField('age',           '45'));
+    const symptomDur    = Number(getField('symptom_dur',   '4'));
+    const famHist       =        getField('fam_hist',      'No');
+    const reproHist     =        getField('repro_hist',    'Normal');
+    const query         =        getField('query',         'What are the recommended next steps for this patient?');
+    const patientNumber =        getField('patient_number', '');
 
     // ── Call Gradio ────────────────────────────────────────────────────────────
     console.log(`[inference] age=${age} dur=${symptomDur} fam=${famHist} repro=${reproHist}`);
@@ -163,7 +164,7 @@ export default async function handler(req, res) {
 
     console.log(`[inference] classification=${summary.classification}`);
 
-    return res.status(200).json({ ...summary, report, attentionMapUrl });
+    return res.status(200).json({ ...summary, report, attentionMapUrl, patientNumber });
 
   } catch (err) {
     // Reset client on error so the next invocation gets a fresh connection.

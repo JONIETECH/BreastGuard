@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { useAppStore } from '../store/appStore';
-import { runInference } from '../services/hfApi';
+import { runInference } from '../services/inferenceApi';
 import { validateAge, validateImageFile, readFileAsDataURL } from '../utils/helpers';
-import { Select, Textarea } from '../components/FormInputs';
+import { Input, Select, Textarea } from '../components/FormInputs';
 import { FiAlertCircle, FiImage, FiLayers, FiRefreshCw, FiSend, FiUpload, FiX } from 'react-icons/fi';
 import LoadingSpinner from '../components/LoadingSpinner';
 import bgDesktop from '../assets/bg2.webp';
@@ -12,6 +12,7 @@ const DEFAULT_QUERY = 'What are the recommended next steps for this patient?';
 
 export default function AIAssistantPage() {
   const { addPrediction, addToHistory } = useAppStore();
+  const [patientNumber, setPatientNumber] = useState('');
   const [age, setAge] = useState('45');
   const [symptomDuration, setSymptomDuration] = useState('4');
   const [familyHistory, setFamilyHistory] = useState('No');
@@ -71,6 +72,11 @@ export default function AIAssistantPage() {
   };
 
   const validateForm = () => {
+    if (!patientNumber.trim()) {
+      setError('Please enter a patient number.');
+      return false;
+    }
+
     if (!selectedImage) {
       setError('Please upload a histopathology image before running the case.');
       return false;
@@ -98,6 +104,7 @@ export default function AIAssistantPage() {
     try {
       const response = await runInference({
         image: selectedImage,
+        patientNumber: patientNumber.trim(),
         age,
         symptomDur: symptomDuration,
         famHist: familyHistory,
@@ -110,6 +117,7 @@ export default function AIAssistantPage() {
       addPrediction(response);
       addToHistory({
         type: 'assistant_case',
+        patientNumber: response.patientNumber,
         factors: {
           age,
           symptomDuration,
@@ -129,6 +137,7 @@ export default function AIAssistantPage() {
   };
 
   const resetCase = () => {
+    setPatientNumber('');
     setAge('45');
     setSymptomDuration('4');
     setFamilyHistory('No');
@@ -248,6 +257,15 @@ export default function AIAssistantPage() {
               </div>
 
               {error && <div style={styles.errorBanner}>{error}</div>}
+
+              <Input
+                label="Patient Number"
+                name="patientNumber"
+                placeholder="e.g., PN-2026-00123"
+                value={patientNumber}
+                onChange={(e) => setPatientNumber(e.target.value)}
+                required
+              />
 
               <div style={styles.sliderRow}>
                 <div style={styles.sliderCard}>

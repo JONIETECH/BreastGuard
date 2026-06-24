@@ -31,7 +31,10 @@ export const useAppStore = create((set) => ({
   predictions: [],
   addPrediction: (prediction) =>
     set((state) => ({
-      predictions: [...state.predictions, prediction],
+      predictions: [
+        ...state.predictions,
+        { id: crypto.randomUUID(), timestamp: new Date(), ...prediction },
+      ],
     })),
 
   // Chat Messages
@@ -42,12 +45,12 @@ export const useAppStore = create((set) => ({
     })),
   clearChat: () => set(() => ({ chatMessages: [] })),
 
-  // History
+  // History (kept for compatibility; results page now owns the UI)
   history: [],
   addToHistory: (session) =>
     set((state) => ({
       history: [
-        { id: Date.now(), ...session, timestamp: new Date() },
+        { id: crypto.randomUUID(), ...session, timestamp: new Date() },
         ...state.history,
       ],
     })),

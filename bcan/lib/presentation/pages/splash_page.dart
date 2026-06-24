@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../core/constants/app_routes.dart';
+import '../providers/auth_provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -38,11 +41,19 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
     _controller.forward();
 
-    Timer(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.home);
-      }
-    });
+    _navigateWhenReady();
+  }
+
+  Future<void> _navigateWhenReady() async {
+    final auth = context.read<AuthProvider>();
+    // Wait for both the minimum splash duration and the auth check to finish.
+    await Future.wait([
+      Future.delayed(const Duration(milliseconds: 2500)),
+      auth.loadUser(),
+    ]);
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+    }
   }
 
   @override

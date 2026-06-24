@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../providers/auth_provider.dart';
+import '../providers/scan_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -56,6 +59,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final scanProvider = context.watch<ScanProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -87,9 +94,11 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 140),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              _buildStatisticsSection(),
+              if (user != null)
+                _buildWelcomeCard(user.fullName ?? user.email),
+              _buildStatisticsSection(scanProvider.totalScans, scanProvider.highRiskCount),
               const SizedBox(height: 24),
-              _buildRecentScansSection(),
+              _buildRecentScansSection(scanProvider.recentScans),
               const SizedBox(height: 24),
               _buildNewsSection(),
             ]),
@@ -99,8 +108,55 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildWelcomeCard(String name) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0x1FEC4899)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0x1FEC4899),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.person, color: AppColors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Welcome back,',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                ),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _buildStatisticsSection() {
+
+  Widget _buildStatisticsSection(int totalScans, int highRiskCount) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,7 +165,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: _StatCard(
                 title: 'Total Scans',
-                value: '142',
+                value: totalScans.toString(),
                 icon: Icons.image_search,
                 color: const Color(0xFF10B981),
               ),
@@ -118,7 +174,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: _StatCard(
                 title: 'High Risk',
-                value: '12',
+                value: highRiskCount.toString(),
                 icon: Icons.warning_amber_rounded,
                 color: const Color(0xFFEF4444),
               ),
@@ -129,12 +185,48 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRecentScansSection() {
-    final recentScans = [
-      {'date': 'Today, 10:45 AM', 'result': 'Low Risk', 'score': '0.12', 'color': const Color(0xFF10B981)},
-      {'date': 'Yesterday, 2:30 PM', 'result': 'Elevated Risk', 'score': '0.64', 'color': const Color(0xFFF59E0B)},
-      {'date': 'May 28, 9:15 AM', 'result': 'High Risk', 'score': '0.89', 'color': const Color(0xFFEF4444)},
-    ];
+  Widget _buildRecentScansSection(List<Scan> recentScans) {
+    if (recentScans.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Recent Assistant Scans',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.secondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0x1FEC4899)),
+            ),
+            child: const Text(
+              'No scans yet. Use the Assistant to run a case analysis.',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+        ],
+      );
+    }
+
+    Color resultColor(String classification) {
+      switch (classification.toLowerCase()) {
+        case 'malignant':
+        case 'high':
+          return const Color(0xFFEF4444);
+        case 'benign':
+        case 'low':
+          return const Color(0xFF10B981);
+        default:
+          return const Color(0xFFF59E0B);
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,6 +241,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 12),
         ...recentScans.map((scan) {
+          final color = resultColor(scan.classification);
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(14),
@@ -163,10 +256,10 @@ class _HomePageState extends State<HomePage> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: (scan['color'] as Color).withValues(alpha: 0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.document_scanner, color: scan['color'] as Color),
+                  child: Icon(Icons.document_scanner, color: color),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -174,12 +267,14 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scan['date'] as String,
+                        scan.patientNumber.isNotEmpty
+                            ? 'Patient ${scan.patientNumber}'
+                            : 'Unnamed Patient',
                         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'AI Result: ${scan['result']}',
+                        'AI Result: ${scan.classification} · ${DateFormat('MMM d, h:mm a').format(scan.timestamp)}',
                         style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                       ),
                     ],
@@ -188,13 +283,13 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: (scan['color'] as Color).withValues(alpha: 0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    scan['score'] as String,
+                    '${scan.score}/100',
                     style: TextStyle(
-                      color: scan['color'] as Color,
+                      color: color,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
