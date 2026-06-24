@@ -26,10 +26,19 @@ export async function runInference({
     credentials: 'include',
   });
 
-  const data = await response.json().catch(() => ({}));
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
+  }
 
   if (!response.ok) {
-    throw new Error(data.error || `Inference failed: ${response.status}`);
+    throw new Error(data?.error || `Inference failed: ${response.status}`);
+  }
+
+  if (!data || typeof data !== 'object' || !data.classification) {
+    throw new Error('Unexpected inference response from server.');
   }
 
   return {
