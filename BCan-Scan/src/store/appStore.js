@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { getScans, deleteScan } from '../services/scanApi.js';
 
+function generateId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
 export const useAppStore = create((set) => ({
   // Risk Assessment
   riskFactors: {
@@ -61,8 +68,19 @@ export const useAppStore = create((set) => ({
     set((state) => ({
       predictions: [
         ...state.predictions,
-        { id: crypto.randomUUID(), timestamp: new Date(), ...prediction },
+        { id: generateId(), timestamp: new Date(), ...prediction },
       ],
+    })),
+
+  // Local history for quick reference (scans are the persistent source of truth)
+  history: [],
+  addToHistory: (entry) =>
+    set((state) => ({
+      history: [{ id: generateId(), timestamp: new Date(), ...entry }, ...state.history],
+    })),
+  removeFromHistory: (id) =>
+    set((state) => ({
+      history: state.history.filter((h) => h.id !== id),
     })),
 
   // Clear all
@@ -80,5 +98,6 @@ export const useAppStore = create((set) => ({
       predictions: [],
       chatMessages: [],
       scans: [],
+      history: [],
     })),
 }));
