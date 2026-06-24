@@ -25,11 +25,20 @@ function extractImageUrl(value) {
 
 function deriveSummary(report) {
   const lower = String(report || '').toLowerCase();
-  if (lower.includes('malignancy suspected') || lower.includes('🔴') || lower.includes('malignant')) {
+  // Prioritize explicit benign markers first. Benign reports often mention
+  // "malignant" only in a negative context (e.g. "no malignant cells"), so
+  // matching "malignant" too early would misclassify them.
+  if (lower.includes('benign finding') || lower.includes('�')) {
+    return { classification: 'Benign', confidence: 89, level: 'Low', score: 11 };
+  }
+  if (lower.includes('malignancy suspected') || lower.includes('🔴')) {
     return { classification: 'Malignant', confidence: 94, level: 'High', score: 94 };
   }
-  if (lower.includes('benign finding') || lower.includes('🟢') || lower.includes('benign')) {
+  if (lower.includes('benign')) {
     return { classification: 'Benign', confidence: 89, level: 'Low', score: 11 };
+  }
+  if (lower.includes('malignant')) {
+    return { classification: 'Malignant', confidence: 94, level: 'High', score: 94 };
   }
   return { classification: 'Review Required', confidence: 76, level: 'Medium', score: 50 };
 }

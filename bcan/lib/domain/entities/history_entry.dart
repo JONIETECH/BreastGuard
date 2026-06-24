@@ -1,3 +1,12 @@
+DateTime _parseHistoryTimestamp(String? value) {
+  if (value == null || value.isEmpty) return DateTime.now();
+  var normalized = value.trim();
+  if (!normalized.endsWith('Z') && !RegExp(r'[+-]\d{2}:\d{2}$').hasMatch(normalized)) {
+    normalized = '${normalized}Z';
+  }
+  return DateTime.tryParse(normalized)?.toLocal() ?? DateTime.now();
+}
+
 class HistoryEntry {
   const HistoryEntry({
     required this.id,
@@ -13,9 +22,7 @@ class HistoryEntry {
     return HistoryEntry(
       id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? 'Untitled',
-      timestamp:
-          DateTime.tryParse(json['timestamp'] as String? ?? '') ??
-          DateTime.now(),
+      timestamp: _parseHistoryTimestamp(json['timestamp'] as String?),
     );
   }
 }

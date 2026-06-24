@@ -52,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -61,29 +62,25 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Welcome back',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                    textAlign: TextAlign.center,
+                  Image.asset(
+                    'assets/logo wordmark.webp',
+                    height: 50,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Sign in to continue using BreastGuard AI.',
+                  const SizedBox(height: 32),
+                  Text(
+                    'Sign in to continue',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                   const SizedBox(height: 32),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'you@example.com',
-                      border: OutlineInputBorder(),
-                    ),
+                    style: const TextStyle(color: AppColors.textPrimary),
+                    decoration: _inputDecoration('Email', 'Enter your email'),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Email is required';
@@ -95,15 +92,14 @@ class _LoginPageState extends State<LoginPage> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
-                      border: const OutlineInputBorder(),
+                    style: const TextStyle(color: AppColors.textPrimary),
+                    decoration: _inputDecoration('Password', 'Enter your password').copyWith(
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off
                               : Icons.visibility,
+                          color: AppColors.textSecondary,
                         ),
                         onPressed: () {
                           setState(() {
@@ -122,6 +118,14 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: auth.loading ? null : _submit,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                     child: auth.loading
                         ? const SizedBox(
                             height: 20,
@@ -131,19 +135,31 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Login'),
+                        : const Text(
+                            'Login',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Don\'t have an account?'),
+                      Text(
+                        'Don\'t have an account?',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
                       TextButton(
                         onPressed: () => Navigator.pushNamed(
                           context,
                           AppRoutes.signup,
                         ),
-                        child: const Text('Create one'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                        ),
+                        child: const Text(
+                          'Create one',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ],
                   ),
@@ -152,6 +168,29 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label, String hint) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      labelStyle: const TextStyle(color: AppColors.textSecondary),
+      hintStyle: const TextStyle(color: AppColors.textSecondary),
+      filled: true,
+      fillColor: AppColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.textSecondary),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.textSecondary),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
     );
   }

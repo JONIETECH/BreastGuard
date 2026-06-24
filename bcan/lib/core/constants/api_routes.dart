@@ -1,7 +1,9 @@
 class ApiRoutes {
   const ApiRoutes._();
 
-  static const String baseUrl = 'https://api.bcanscan.com';
+  // The actual base URL is read from dotenv.env['API_BASE_URL'] in ApiClient.
+  // This value is kept here as a reference for production builds.
+  static const String baseUrl = 'https://breastcancerscreening.vercel.app';
 
   static const String predictRisk = '/api/v1/risk/predict';
   static const String classifyImage = '/api/v1/images/classify';

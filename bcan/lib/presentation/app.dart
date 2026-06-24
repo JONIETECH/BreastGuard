@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_routes.dart';
+import 'pages/all_scans_page.dart';
 import 'pages/login_page.dart';
 import 'pages/main_shell_page.dart';
 import 'pages/signup_page.dart';
@@ -60,6 +61,7 @@ class BCanScanApp extends StatelessWidget {
           AppRoutes.results: (ctx) => _authShell(ctx, 0),
           AppRoutes.assistant: (ctx) => _authShell(ctx, 1),
           AppRoutes.history: (ctx) => _authShell(ctx, 0),
+          AppRoutes.allScans: (_) => const AllScansPage(),
           AppRoutes.about: (_) => const MainShellPage(initialIndex: 2),
           AppRoutes.login: (_) => const LoginPage(),
           AppRoutes.signup: (_) => const SignupPage(),

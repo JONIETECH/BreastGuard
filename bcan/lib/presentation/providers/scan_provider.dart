@@ -3,6 +3,16 @@ import 'package:flutter/foundation.dart';
 import '../../core/constants/api_routes.dart';
 import '../../core/network/api_client.dart';
 
+DateTime _parseBackendTimestamp(String? value) {
+  if (value == null) return DateTime.now();
+  var normalized = value.trim();
+  // If the backend omits the timezone suffix, treat it as UTC.
+  if (!normalized.endsWith('Z') && !RegExp(r'[+-]\d{2}:\d{2}$').hasMatch(normalized)) {
+    normalized = '${normalized}Z';
+  }
+  return DateTime.tryParse(normalized)?.toLocal() ?? DateTime.now();
+}
+
 class Scan {
   Scan({
     required this.id,
@@ -39,9 +49,7 @@ class Scan {
       level: json['level'] as String? ?? 'Medium',
       score: (json['score'] as num?)?.toInt() ?? 50,
       report: json['report'] as String? ?? 'No report available.',
-      timestamp: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
-          : DateTime.now(),
+      timestamp: _parseBackendTimestamp(json['createdAt'] as String?),
       gradCamBase64: json['gradCamBase64'] as String?,
     );
   }
@@ -54,7 +62,7 @@ class ScanProvider extends ChangeNotifier {
   List<Scan> get scans => List.unmodifiable(_scans);
 
   int get totalScans => _scans.length;
-  int get highRiskCount => _scans.where((s) => s.isHighRisk).length;
+  int get highRiskCount => _scans.where((s) => s.classification.toLowerCase() == 'malignant').length;
 
   List<Scan> get recentScans {
     final sorted = [..._scans]..sort((a, b) => b.timestamp.compareTo(a.timestamp));

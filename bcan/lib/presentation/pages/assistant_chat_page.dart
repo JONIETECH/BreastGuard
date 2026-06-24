@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +7,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/network/api_client.dart';
 import '../../core/secure_storage.dart';
 import '../providers/scan_provider.dart';
 
@@ -84,7 +84,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
     });
 
     try {
-      final baseUrl = dotenv.env['API_BASE_URL']!;
+      final baseUrl = ApiClient().baseUrl;
       final Uri uri = Uri.parse('$baseUrl/api/inference');
 
       // The /api/inference endpoint requires multipart/form-data with

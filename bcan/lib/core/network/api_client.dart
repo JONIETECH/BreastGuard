@@ -7,7 +7,7 @@ import '../secure_storage.dart';
 
 class ApiClient {
   ApiClient({http.Client? client})
-    : baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:3001',
+    : baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://breastcancerscreening.vercel.app',
       _client = client ?? http.Client();
 
   final String baseUrl;
