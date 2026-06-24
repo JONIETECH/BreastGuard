@@ -8,6 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/secure_storage.dart';
 import '../providers/scan_provider.dart';
 
 class AssistantChatPage extends StatefulWidget {
@@ -108,6 +109,11 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
       request.fields['repro_hist']       = _reproHist;
       request.fields['query']            = _queryController.text;
 
+      final token = await AuthStorage.readToken();
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
       final http.StreamedResponse streamed = await request.send();
       final http.Response response = await http.Response.fromStream(streamed);
 
@@ -136,7 +142,8 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
         });
 
         if (mounted) {
-          context.read<ScanProvider>().addScan(
+          final scanProvider = context.read<ScanProvider>();
+          scanProvider.addScan(
             Scan(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
               patientNumber: patientNumber,
@@ -149,6 +156,7 @@ class _AssistantChatPageState extends State<AssistantChatPage> {
               gradCamBase64: gradCam,
             ),
           );
+          await scanProvider.loadScans();
         }
       } else {
         throw Exception('API returned status code ${response.statusCode}: ${response.body}');

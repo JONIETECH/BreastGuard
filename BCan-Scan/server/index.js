@@ -15,8 +15,6 @@
 import express from 'express';
 import cors from 'cors';
 import formidable from 'formidable';
-import { Client } from '@gradio/client';
-import fs from 'fs';
 import * as cookie from 'cookie';
 import { prisma } from './lib/prisma.js';
 import {
@@ -29,11 +27,10 @@ import {
   stripUser,
 } from './lib/auth.js';
 import { parseBody, signupSchema, loginSchema, ValidationError } from './lib/validate.js';
+import { runInferenceAndSave, resetGradioClient } from './lib/inference.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const SPACE_ID = 'EmmasonMutsaka/BreastCancer-Ai-Screening';
-const ALLOWED_MIME = ['image/png', 'image/jpeg', 'image/jpg'];
 
 // CORS — allow all origins for Flutter dev testing
 app.use(cors({ origin: true, credentials: true }));
@@ -43,15 +40,6 @@ app.use((req, _res, next) => {
   req.cookies = cookies;
   next();
 });
-
-// ── Gradio client singleton ────────────────────────────────────────────────────
-let _gradioClient = null;
-async function getGradioClient() {
-  if (!_gradioClient) {
-    _gradioClient = await Client.connect(SPACE_ID);
-  }
-  return _gradioClient;
-}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -65,31 +53,10 @@ function parseMultipart(req) {
   });
 }
 
-function extractImageUrl(value) {
-  if (!value) return null;
-  if (typeof value === 'string') return value;
-  if (typeof value === 'object') {
-    if (typeof value.url === 'string') return value.url;
-    if (typeof value.path === 'string') return value.path;
-  }
-  return null;
-}
-
-function deriveSummary(report) {
-  const lower = String(report || '').toLowerCase();
-  if (lower.includes('malignancy suspected') || lower.includes('🔴') || lower.includes('malignant')) {
-    return { classification: 'Malignant', confidence: 94, level: 'High', score: 94 };
-  }
-  if (lower.includes('benign finding') || lower.includes('🟢') || lower.includes('benign')) {
-    return { classification: 'Benign', confidence: 89, level: 'Low', score: 11 };
-  }
-  return { classification: 'Review Required', confidence: 76, level: 'Medium', score: 50 };
-}
-
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', space: SPACE_ID, timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', space: process.env.SPACE_ID, timestamp: new Date().toISOString() });
 });
 
 // ── Auth routes ───────────────────────────────────────────────────────────────
@@ -154,63 +121,76 @@ app.post('/api/auth/logout', (_req, res) => {
   return res.status(200).json({ message: 'Logged out successfully' });
 });
 
-app.post('/api/inference', async (req, res) => {
-  let tempFilePath = null;
-
+app.get('/api/scans', async (req, res) => {
   try {
-    const { fields, files } = await parseMultipart(req);
-
-    const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-    if (!imageFile) {
-      return res.status(400).json({ error: 'An image file is required. Send it as "image" in multipart/form-data.' });
+    const user = await getUserFromRequest(req, prisma);
+    if (!user) {
+      return res.status(401).json({ error: 'Authentication required.' });
     }
 
-    const mimetype = imageFile.mimetype || imageFile.type || '';
-    if (!ALLOWED_MIME.includes(mimetype)) {
-      return res.status(400).json({ error: 'Only PNG and JPG images are accepted.' });
-    }
-
-    tempFilePath = imageFile.filepath || imageFile.path;
-    const fileBuffer = fs.readFileSync(tempFilePath);
-    const imageBlob = new Blob([fileBuffer], { type: mimetype });
-
-    const getField = (key, def) => {
-      const v = fields[key];
-      return String(Array.isArray(v) ? v[0] : v ?? def);
-    };
-
-    const age           = Number(getField('age',           '45'));
-    const symptomDur    = Number(getField('symptom_dur',   '4'));
-    const famHist       =        getField('fam_hist',      'No');
-    const reproHist     =        getField('repro_hist',    'Normal');
-    const query         =        getField('query',         'What are the recommended next steps for this patient?');
-    const patientNumber =        getField('patient_number', '');
-
-    console.log(`[inference] age=${age} dur=${symptomDur} fam=${famHist} repro=${reproHist} patient=${patientNumber}`);
-    const client = await getGradioClient();
-
-    const gradioResponse = await client.predict('/run_inference', {
-      image: imageBlob, age, symptom_dur: symptomDur,
-      fam_hist: famHist, repro_hist: reproHist, query,
+    const scans = await prisma.scan.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        patientNumber: true,
+        classification: true,
+        confidence: true,
+        level: true,
+        score: true,
+        report: true,
+        imageBase64: true,
+        gradCamBase64: true,
+        createdAt: true,
+      },
     });
 
-    const data = Array.isArray(gradioResponse?.data) ? gradioResponse.data : [];
-    const report = String(data[0] ?? 'No report was returned by the model.');
-    const attentionMapUrl = extractImageUrl(data[1]);
-    const summary = deriveSummary(report);
-
-    console.log(`[inference] classification=${summary.classification}`);
-    return res.json({ ...summary, report, attentionMapUrl, patientNumber });
-
+    return res.status(200).json({ scans });
   } catch (err) {
-    _gradioClient = null;
+    console.error('[scans] error:', err.message);
+    return res.status(500).json({ error: 'Failed to fetch scans.' });
+  }
+});
+
+app.delete('/api/scans/:id', async (req, res) => {
+  try {
+    const user = await getUserFromRequest(req, prisma);
+    if (!user) {
+      return res.status(401).json({ error: 'Authentication required.' });
+    }
+
+    const { id } = req.params;
+    const existing = await prisma.scan.findFirst({
+      where: { id, userId: user.id },
+    });
+    if (!existing) {
+      return res.status(404).json({ error: 'Scan not found.' });
+    }
+
+    await prisma.scan.delete({ where: { id } });
+    return res.status(200).json({ message: 'Scan deleted.' });
+  } catch (err) {
+    console.error('[scan delete] error:', err.message);
+    return res.status(500).json({ error: 'Failed to delete scan.' });
+  }
+});
+
+app.post('/api/inference', async (req, res) => {
+  try {
+    const user = await getUserFromRequest(req, prisma);
+    if (!user) {
+      return res.status(401).json({ error: 'Authentication required.' });
+    }
+
+    const { fields, files } = await parseMultipart(req);
+    const result = await runInferenceAndSave({ fields, files, userId: user.id });
+    return res.json(result);
+  } catch (err) {
+    resetGradioClient();
+    const statusCode = err?.statusCode || 502;
     const message = err?.message || 'Inference failed.';
     console.error('[inference] error:', message);
-    return res.status(502).json({ error: message });
-  } finally {
-    if (tempFilePath) {
-      try { fs.unlinkSync(tempFilePath); } catch (_) {}
-    }
+    return res.status(statusCode).json({ error: message });
   }
 });
 

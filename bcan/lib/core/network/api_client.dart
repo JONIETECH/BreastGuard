@@ -42,6 +42,12 @@ class ApiClient {
     return _decodeResponse(response);
   }
 
+  Future<Map<String, dynamic>> deleteJson(String path) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final response = await _client.delete(uri, headers: await _headers());
+    return _decodeResponse(response);
+  }
+
   Future<List<dynamic>> getJsonList(String path) async {
     final uri = Uri.parse('$baseUrl$path');
     final response = await _client.get(uri, headers: await _headers());

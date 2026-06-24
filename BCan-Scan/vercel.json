@@ -3,5 +3,16 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  ],
+  "functions": {
+    "api/inference.js": {
+      "maxDuration": 60
+    },
+    "api/scans.js": {
+      "maxDuration": 10
+    },
+    "api/scans/[id].js": {
+      "maxDuration": 10
+    }
+  }
 }

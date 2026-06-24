@@ -7,8 +7,21 @@ import '../../core/constants/app_routes.dart';
 import '../providers/auth_provider.dart';
 import '../providers/scan_provider.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
+
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ScanProvider>().loadScans();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

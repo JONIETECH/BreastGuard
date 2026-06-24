@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from '../store/appStore';
 import Card from '../components/Card';
 import { colors } from '../utils/colors.js';
 import { formatDate } from '../utils/helpers';
-import { FiAlertCircle, FiUser } from 'react-icons/fi';
+import { FiAlertCircle } from 'react-icons/fi';
 
 export default function ResultsDashboardPage() {
-  const { predictions } = useAppStore();
+  const { scans, loadScans, scansLoading } = useAppStore();
   const [selectedId, setSelectedId] = useState(null);
 
-  const sorted = [...predictions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  const selected = sorted.find((p) => p.id === selectedId) || sorted[0];
+  useEffect(() => {
+    loadScans();
+  }, [loadScans]);
 
-  if (predictions.length === 0) {
+  const sorted = [...scans].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const selected = sorted.find((s) => s.id === selectedId) || sorted[0];
+
+  if (scansLoading) {
+    return (
+      <div style={styles.container}>
+        <h1>Patient Results</h1>
+        <p style={styles.subtitle}>Loading your scans...</p>
+      </div>
+    );
+  }
+
+  if (scans.length === 0) {
     return (
       <div style={styles.container}>
         <h1>Patient Results</h1>
@@ -34,43 +47,43 @@ export default function ResultsDashboardPage() {
 
       <div style={styles.layout}>
         <div style={styles.listColumn}>
-          {sorted.map((prediction) => (
+          {sorted.map((scan) => (
             <button
-              key={prediction.id}
-              onClick={() => setSelectedId(prediction.id)}
+              key={scan.id}
+              onClick={() => setSelectedId(scan.id)}
               style={{
                 ...styles.listItem,
-                ...(selected?.id === prediction.id ? styles.listItemActive : {}),
+                ...(selected?.id === scan.id ? styles.listItemActive : {}),
               }}
             >
               <div style={styles.listHeader}>
                 <span style={styles.listTitle}>
-                  {prediction.patientNumber ? `Patient ${prediction.patientNumber}` : 'Unnamed Patient'}
+                  {scan.patientNumber ? `Patient ${scan.patientNumber}` : 'Unnamed Patient'}
                 </span>
                 <span
                   style={{
                     ...styles.badge,
                     backgroundColor:
-                      prediction.classification === 'Malignant'
+                      scan.classification === 'Malignant'
                         ? colors.malignantBg
-                        : prediction.classification === 'Benign'
+                        : scan.classification === 'Benign'
                         ? colors.benignBg
                         : colors.riskMediumBg,
                     color:
-                      prediction.classification === 'Malignant'
+                      scan.classification === 'Malignant'
                         ? colors.malignantText
-                        : prediction.classification === 'Benign'
+                        : scan.classification === 'Benign'
                         ? colors.benignText
                         : colors.riskMediumText,
                   }}
                 >
-                  {prediction.classification}
+                  {scan.classification}
                 </span>
               </div>
               <div style={styles.listMeta}>
-                <span>{prediction.timestamp ? formatDate(prediction.timestamp) : 'Just now'}</span>
+                <span>{scan.createdAt ? formatDate(scan.createdAt) : 'Just now'}</span>
                 <span style={styles.dot}>·</span>
-                <span>{prediction.confidence}% confidence</span>
+                <span>{scan.confidence}% confidence</span>
               </div>
             </button>
           ))}
@@ -85,7 +98,7 @@ export default function ResultsDashboardPage() {
                     {selected.patientNumber ? `Patient ${selected.patientNumber}` : 'Patient Result'}
                   </h2>
                   <p style={styles.detailMeta}>
-                    {selected.timestamp ? formatDate(selected.timestamp) : 'Just now'} · {selected.confidence}% confidence
+                    {selected.createdAt ? formatDate(selected.createdAt) : 'Just now'} · {selected.confidence}% confidence
                   </p>
                 </div>
                 <span
@@ -129,11 +142,11 @@ export default function ResultsDashboardPage() {
                 <p style={styles.reportText}>{selected.report}</p>
               </div>
 
-              {selected.attentionMap && (
+              {selected.gradCamBase64 && (
                 <div style={styles.section}>
                   <h3 style={styles.sectionTitle}>Grad-CAM Explanation</h3>
                   <img
-                    src={selected.attentionMap}
+                    src={`data:image/png;base64,${selected.gradCamBase64}`}
                     alt="Tissue attention map"
                     style={styles.attentionMap}
                   />

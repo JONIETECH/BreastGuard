@@ -15,8 +15,28 @@ model User {
   role         Role     @default(CLINICIAN)
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
+  scans        Scan[]
 
   @@map("users")
+}
+
+model Scan {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  patientNumber  String   @map("patient_number") @db.VarChar(255)
+  classification String   @db.VarChar(100)
+  confidence     Int
+  level          String   @db.VarChar(100)
+  score          Int
+  report         String   @db.Text
+  imageBase64    String?  @map("image_base64") @db.Text
+  gradCamBase64  String?  @map("grad_cam_base64") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("scans")
+  @@index([userId])
 }
 
 enum Role {

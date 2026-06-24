@@ -13,4 +13,5 @@ class ApiRoutes {
   static const String login = '/api/auth/login';
   static const String me = '/api/auth/me';
   static const String logout = '/api/auth/logout';
+  static const String scans = '/api/scans';
 }

@@ -26,6 +26,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchNews();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ScanProvider>().loadScans();
+    });
   }
 
   Future<void> _fetchNews() async {

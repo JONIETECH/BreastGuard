@@ -11,7 +11,7 @@ import bgMobile from '../assets/bg2.jpg';
 const DEFAULT_QUERY = 'What are the recommended next steps for this patient?';
 
 export default function AIAssistantPage() {
-  const { addPrediction, addToHistory } = useAppStore();
+  const { addPrediction, addToHistory, loadScans } = useAppStore();
   const [patientNumber, setPatientNumber] = useState('');
   const [age, setAge] = useState('45');
   const [symptomDuration, setSymptomDuration] = useState('4');
@@ -115,6 +115,7 @@ export default function AIAssistantPage() {
       setResult(response);
       setActiveTab('report');
       addPrediction(response);
+      loadScans();
       addToHistory({
         type: 'assistant_case',
         patientNumber: response.patientNumber,

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getScans, deleteScan } from '../services/scanApi.js';
 
 export const useAppStore = create((set) => ({
   // Risk Assessment
@@ -27,15 +28,24 @@ export const useAppStore = create((set) => ({
     })),
   clearImages: () => set(() => ({ uploadedImages: [] })),
 
-  // Predictions
-  predictions: [],
-  addPrediction: (prediction) =>
-    set((state) => ({
-      predictions: [
-        ...state.predictions,
-        { id: crypto.randomUUID(), timestamp: new Date(), ...prediction },
-      ],
-    })),
+  // Scans (loaded from API)
+  scans: [],
+  scansLoading: false,
+  scansError: null,
+  setScans: (scans) => set(() => ({ scans, scansError: null })),
+  loadScans: async () => {
+    set(() => ({ scansLoading: true, scansError: null }));
+    try {
+      const data = await getScans();
+      set(() => ({ scans: data.scans || [], scansLoading: false }));
+    } catch (err) {
+      set(() => ({ scansError: err.message, scansLoading: false }));
+    }
+  },
+  removeScan: async (id) => {
+    await deleteScan(id);
+    set((state) => ({ scans: state.scans.filter((s) => s.id !== id) }));
+  },
 
   // Chat Messages
   chatMessages: [],
@@ -45,18 +55,14 @@ export const useAppStore = create((set) => ({
     })),
   clearChat: () => set(() => ({ chatMessages: [] })),
 
-  // History (kept for compatibility; results page now owns the UI)
-  history: [],
-  addToHistory: (session) =>
+  // Predictions kept for transient UI state; persisted scans are the source of truth
+  predictions: [],
+  addPrediction: (prediction) =>
     set((state) => ({
-      history: [
-        { id: crypto.randomUUID(), ...session, timestamp: new Date() },
-        ...state.history,
+      predictions: [
+        ...state.predictions,
+        { id: crypto.randomUUID(), timestamp: new Date(), ...prediction },
       ],
-    })),
-  removeFromHistory: (id) =>
-    set((state) => ({
-      history: state.history.filter((item) => item.id !== id),
     })),
 
   // Clear all
@@ -73,5 +79,6 @@ export const useAppStore = create((set) => ({
       uploadedImages: [],
       predictions: [],
       chatMessages: [],
+      scans: [],
     })),
 }));

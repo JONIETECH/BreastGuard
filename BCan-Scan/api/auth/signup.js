@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     const token = signToken({ sub: user.id, email: user.email, role: user.role });
     setAuthCookie(res, token);
 
-    return res.status(201).json({ user: stripUser(user) });
+    return res.status(201).json({ user: stripUser(user), token });
   } catch (err) {
     if (err instanceof ValidationError) {
       return res.status(400).json({ error: err.message });
