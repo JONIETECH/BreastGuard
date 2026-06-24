@@ -327,7 +327,7 @@ export default function AIAssistantPage() {
                   onChange={(e) => setReproductiveHistory(e.target.value)}
                   options={[
                     { value: 'Normal', label: 'Normal' },
-                    { value: 'Early menarche', label: 'Early menarche' },
+                    { value: 'Early Menarche', label: 'Early Menarche' },
                     { value: 'Nulliparous', label: 'Nulliparous' },
                   ]}
                 />

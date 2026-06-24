@@ -208,6 +208,9 @@ const styles = {
     fontWeight: 700,
     color: 'var(--gray-900)',
     fontSize: '0.95rem',
+    minWidth: 0,
+    wordBreak: 'break-word',
+    overflowWrap: 'break-word',
   },
   listMeta: {
     display: 'flex',
@@ -228,6 +231,7 @@ const styles = {
   },
   detailColumn: {
     minWidth: 0,
+    overflow: 'hidden',
   },
   detailHeader: {
     display: 'flex',
@@ -241,6 +245,7 @@ const styles = {
     margin: '0 0 0.25rem',
     color: 'var(--gray-900)',
     fontSize: '1.3rem',
+    wordBreak: 'break-word',
   },
   detailMeta: {
     margin: 0,
@@ -278,6 +283,8 @@ const styles = {
     color: 'var(--gray-800)',
     lineHeight: 1.7,
     whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    overflowWrap: 'break-word',
   },
   attentionMap: {
     width: '100%',

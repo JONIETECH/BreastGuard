@@ -39,6 +39,17 @@ function getField(fields, key, def) {
   return String(Array.isArray(v) ? v[0] : v ?? def);
 }
 
+function normalizeReproHist(value) {
+  const normalized = String(value || 'Normal').trim();
+  const map = {
+    normal: 'Normal',
+    'early menarche': 'Early Menarche',
+    'early_menarche': 'Early Menarche',
+    nulliparous: 'Nulliparous',
+  };
+  return map[normalized.toLowerCase()] || normalized;
+}
+
 async function fileToBase64(filePath) {
   const { readFile } = await import('fs/promises');
   const buffer = await readFile(filePath);
@@ -83,7 +94,7 @@ export async function runInferenceAndSave({ fields, files, userId }) {
   const age = Number(getField(fields, 'age', '45'));
   const symptomDur = Number(getField(fields, 'symptom_dur', '4'));
   const famHist = getField(fields, 'fam_hist', 'No');
-  const reproHist = getField(fields, 'repro_hist', 'Normal');
+  const reproHist = normalizeReproHist(getField(fields, 'repro_hist', 'Normal'));
   const query = getField(fields, 'query', 'What are the recommended next steps for this patient?');
   const patientNumber = getField(fields, 'patient_number', '').trim();
 
