@@ -8,6 +8,15 @@ export default function ReportDisplay({ result }) {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
+      {/* PRINT BUTTON */}
+      <div style={{ display:'flex', justifyContent:'flex-end' }}>
+        <button
+          onClick={() => window.print()}
+          style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', padding:'0.6rem 1rem', borderRadius:'0.75rem', border:'1px solid #e5e7eb', backgroundColor:'white', color:'#374151', fontWeight:700, fontSize:'0.85rem', cursor:'pointer' }}
+        >
+          🖨️ Print / Save Report
+        </button>
+      </div>
 
       {/* VERDICT */}
       <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'1.1rem', borderRadius:'1rem', backgroundColor:bg, border:`2px solid ${border}`, flexWrap:'wrap' }}>
@@ -113,12 +122,20 @@ export default function ReportDisplay({ result }) {
           <p style={{ margin:'0 0 0.25rem', fontWeight:700, color:'#111827', fontSize:'0.95rem' }}>📚 Supporting Medical Guidelines</p>
           <p style={{ margin:'0 0 0.75rem', color:'#6b7280', fontSize:'0.82rem' }}>WHO · Uganda Ministry of Health · Uganda Cancer Institute · NCCN 2024</p>
           <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
-            {result.guidelines.map((g,i)=>(
-              <div key={i} style={{ display:'flex', gap:'0.6rem', alignItems:'flex-start', padding:'0.6rem 0.75rem', borderRadius:'0.6rem', backgroundColor:'white', border:'1px solid #e5e7eb' }}>
-                <span style={{ color:'#6366f1', fontWeight:700, flexShrink:0 }}>▸</span>
-                <p style={{ margin:0, color:'#374151', fontSize:'0.84rem', lineHeight:1.6 }}>{g}</p>
-              </div>
-            ))}
+           {result.guidelines.map((g,i)=>{
+              const srcMatch = g.match(/^\[([^\]]+)\]:\s*/);
+              const source = srcMatch ? srcMatch[1].replace(/_/g,' ') : '';
+              const text = srcMatch ? g.replace(srcMatch[0],'') : g;
+              return (
+                <div key={i} style={{ display:'flex', gap:'0.6rem', alignItems:'flex-start', padding:'0.7rem 0.75rem', borderRadius:'0.6rem', backgroundColor:'white', border:'1px solid #e5e7eb' }}>
+                  <span style={{ color:'#6366f1', fontWeight:700, flexShrink:0 }}>▸</span>
+                  <div>
+                    {source && <p style={{ margin:'0 0 0.2rem', fontWeight:700, color:'#4f46e5', fontSize:'0.78rem', textTransform:'uppercase', letterSpacing:'0.05em' }}>{source}</p>}
+                    <p style={{ margin:0, color:'#374151', fontSize:'0.84rem', lineHeight:1.6 }}>{text}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
