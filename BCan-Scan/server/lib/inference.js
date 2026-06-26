@@ -23,24 +23,55 @@ function extractImageUrl(value) {
   return null;
 }
 
-function deriveSummary(report) {
-  const lower = String(report || '').toLowerCase();
-  // Prioritize explicit benign markers first. Benign reports often mention
-  // "malignant" only in a negative context (e.g. "no malignant cells"), so
-  // matching "malignant" too early would misclassify them.
-  if (lower.includes('benign finding') || lower.includes('�')) {
-    return { classification: 'Benign', confidence: 89, level: 'Low', score: 11 };
+function parseReport(report) {
+  const text = String(report || '');
+  const lower = text.toLowerCase();
+
+  const isMalignant = lower.includes('malignancy suspected') || text.includes('🔴');
+  const classification = isMalignant ? 'Malignant' : 'Benign';
+
+  const confMatch = text.match(/CONFIDENCE\s*:\s*([\d.]+)%/i);
+  const confidence = confMatch ? Math.round(parseFloat(confMatch[1])) : (isMalignant ? 94 : 89);
+  const level = isMalignant ? 'High' : 'Low';
+  const score = isMalignant ? confidence : Math.round(100 - confidence);
+
+  const hglcmFeatures = [];
+  const featurePattern = /(\w+)\s*:\s*([\d.]+)\s*—\s*(.+)/g;
+  let fm;
+  while ((fm = featurePattern.exec(text)) !== null) {
+    if (['Contrast','Homogeneity','Energy','Correlation','Dissimilarity','ASM'].includes(fm[1])) {
+      hglcmFeatures.push({ name: fm[1], value: fm[2], interpretation: fm[3].trim() });
+    }
   }
-  if (lower.includes('malignancy suspected') || lower.includes('🔴')) {
-    return { classification: 'Malignant', confidence: 94, level: 'High', score: 94 };
-  }
-  if (lower.includes('benign')) {
-    return { classification: 'Benign', confidence: 89, level: 'Low', score: 11 };
-  }
-  if (lower.includes('malignant')) {
-    return { classification: 'Malignant', confidence: 94, level: 'High', score: 94 };
-  }
-  return { classification: 'Review Required', confidence: 76, level: 'Medium', score: 50 };
+
+  const texMatch = text.match(/TEXTURE INTERPRETATION:([\s\S]*?)(?:PATIENT RISK PROFILE|$)/i);
+  const textureInterpretation = texMatch ? texMatch[1].trim() : '';
+
+  const riskMatch = text.match(/PATIENT RISK PROFILE CONTRIBUTION:([\s\S]*?)(?:AI REASONING SUMMARY:|$)/i);
+  const riskProfile = riskMatch ? riskMatch[1].trim() : '';
+
+  const reasonMatch = text.match(/AI REASONING SUMMARY:([\s\S]*?)(?:─{10,}|={10,}|SECTION 2|$)/i);
+  const reasoning = reasonMatch ? reasonMatch[1].trim() : '';
+
+  const urgencyMatch = text.match(/Urgency Level\s*:\s*(.+)/i);
+  const urgency = urgencyMatch ? urgencyMatch[1].trim() : '';
+
+  const actionsMatch = text.match(/Recommended Clinical Actions:([\s\S]*?)(?:Supporting Guideline Evidence:|$)/i);
+  const actionsRaw = actionsMatch ? actionsMatch[1].trim() : '';
+  const actions = actionsRaw.split('\n')
+    .map(l => l.trim()).filter(l => /^\d+\./.test(l))
+    .map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+
+  const guidelinesMatch = text.match(/Supporting Guideline Evidence:([\s\S]*?)(?:Guidelines cited:|={10,}|$)/i);
+  const guidelinesRaw = guidelinesMatch ? guidelinesMatch[1].trim() : '';
+  const guidelines = guidelinesRaw.split('\n')
+    .map(l => l.trim()).filter(l => l.startsWith('•'))
+    .map(l => l.replace(/^•\s*/, '').trim()).filter(Boolean);
+
+  const ageNoteMatch = text.match(/(ℹ️[^\n]+)/);
+  const ageNote = ageNoteMatch ? ageNoteMatch[1].trim() : '';
+
+  return { classification, confidence, level, score, hglcmFeatures, textureInterpretation, riskProfile, reasoning, urgency, actions, guidelines, ageNote };
 }
 
 function getField(fields, key, def) {
@@ -122,7 +153,7 @@ export async function runInferenceAndSave({ fields, files, userId }) {
   const data = Array.isArray(gradioResponse?.data) ? gradioResponse.data : [];
   const report = String(data[0] ?? 'No report was returned by the model.');
   const attentionMapUrl = extractImageUrl(data[1]);
-  const summary = deriveSummary(report);
+  const summary = parseReport(report);
 
   console.log(`[inference] classification=${summary.classification}`);
 
@@ -145,12 +176,20 @@ export async function runInferenceAndSave({ fields, files, userId }) {
     },
   });
 
-  return {
+ return {
     ...summary,
     report,
     attentionMapUrl,
     patientNumber: patientNumber || 'Unnamed Patient',
     scanId: scan.id,
+    hglcmFeatures: summary.hglcmFeatures || [],
+    textureInterpretation: summary.textureInterpretation || '',
+    riskProfile: summary.riskProfile || '',
+    reasoning: summary.reasoning || '',
+    urgency: summary.urgency || '',
+    actions: summary.actions || [],
+    guidelines: summary.guidelines || [],
+    ageNote: summary.ageNote || '',
   };
 }
 
