@@ -7,6 +7,7 @@ import { FiAlertCircle, FiImage, FiLayers, FiRefreshCw, FiSend, FiUpload, FiX } 
 import LoadingSpinner from '../components/LoadingSpinner';
 import bgDesktop from '../assets/bg2.webp';
 import bgMobile from '../assets/bg2.jpg';
+import ReportDisplay from '../components/ReportDisplay';
 
 const DEFAULT_QUERY = 'What are the recommended next steps for this patient?';
 
@@ -131,7 +132,7 @@ export default function AIAssistantPage() {
       });
     } catch (err) {
       console.error('Failed to run case analysis:', err);
-      setError('The deployed model could not complete the request. Please try again.');
+      setError(err?.message || 'The AI model could not be reached. Please wait 30 seconds and try again.');
     } finally {
       setLoading(false);
     }
@@ -429,9 +430,7 @@ export default function AIAssistantPage() {
                   </div>
                 </div>
 
-                <div style={styles.reportBody}>
-                  <p style={styles.reportText}>{result.report}</p>
-                </div>
+                <ReportDisplay result={result} />
               </div>
             ) : (
               <div style={styles.camCard}>
