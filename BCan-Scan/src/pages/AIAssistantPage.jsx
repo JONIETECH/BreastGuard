@@ -425,8 +425,11 @@ export default function AIAssistantPage() {
                     <strong>{result.level}</strong>
                   </div>
                   <div style={styles.summaryItem}>
-                    <span style={styles.summaryLabel}>Score</span>
-                    <strong>{result.score}/100</strong>
+                    <span style={styles.summaryLabel}>Cancer Risk Score</span>
+                    <strong style={{ color: result.score > 50 ? '#dc2626' : '#16a34a' }}>
+                      {result.score}/100 {result.score > 50 ? '⚠️' : '✓'}
+                    </strong>
+                    <span style={{ fontSize:'0.75rem', color:'#6b7280' }}>lower = safer</span>
                   </div>
                 </div>
 
