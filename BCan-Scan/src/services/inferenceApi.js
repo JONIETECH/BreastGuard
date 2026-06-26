@@ -50,6 +50,14 @@ export async function runInference({
     score: data.score,
     report: data.report,
     attentionMap: data.attentionMapUrl,
+    hglcmFeatures: data.hglcmFeatures || [],
+    textureInterpretation: data.textureInterpretation || '',
+    riskProfile: data.riskProfile || '',
+    reasoning: data.reasoning || '',
+    urgency: data.urgency || '',
+    actions: data.actions || [],
+    guidelines: data.guidelines || [],
+    ageNote: data.ageNote || '',
     raw: data,
   };
 }
